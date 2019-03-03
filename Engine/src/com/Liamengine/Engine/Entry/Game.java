@@ -48,7 +48,6 @@ public class Game {
         Swap = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "blank cursor");
 
         InitWindow();
-        System.out.println("com.FuturePixels.Engine.Entry.Game.<init>() " + getScaledHeight() + ", " + getScaledWidth());
         try {
             //        FullScreen();
             DefualtLevel = StartLevel.getClass().newInstance();
