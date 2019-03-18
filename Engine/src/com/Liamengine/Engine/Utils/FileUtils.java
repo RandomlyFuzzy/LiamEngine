@@ -17,10 +17,15 @@ import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
 /**
  *
- * @author RandomlyFuzzy
+ * @author Liam Woolley 1748910
  */
 public class FileUtils {
 
+    /**
+     *
+     * @param URI
+     * @return
+     */
     public static String GetFileContence(String URI) {
         String str = "";
         FileReader fis = null;
@@ -47,6 +52,11 @@ public class FileUtils {
         return str;
     }
 
+    /**
+     *
+     * @param URI
+     * @param Data
+     */
     public static void SetFileContence(String URI, String Data) {
         File file = new File(URI);
         if (!file.exists()) {
@@ -67,11 +77,22 @@ public class FileUtils {
         }
     }
 
+    /**
+     *
+     * @param URI
+     * @param Data
+     */
     public static void AppendToFile(String URI, String Data) {
         String contence = GetFileContence(URI);
         SetFileContence(URI, contence + Data);
     }
 
+    /**
+     *
+     * @param URI
+     * @param regex
+     * @return
+     */
     public static String[] GetFileSplit(String URI, String regex) {
         File file = new File(URI);
         if (!file.exists()) {
@@ -82,9 +103,17 @@ public class FileUtils {
             }
         }
         String contence = GetFileContence(URI);
+        contence = contence.trim();
         return contence.split(regex);
     }
 
+    /**
+     *
+     * @param URI
+     * @param regex
+     * @param AsCollection
+     * @return
+     */
     public static ArrayList<String> GetFileSplit(String URI, String regex, Object AsCollection) {
         ArrayList<String> ret = new ArrayList<String>();
         String[] contence = GetFileSplit(URI, regex);

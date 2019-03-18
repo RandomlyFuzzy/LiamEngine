@@ -15,18 +15,27 @@ import javax.imageio.ImageIO;
 
 /**
  *
- * @author RandomlyFuzzy
+ * @author Liam Woolley 1748910
  */
 public class imageUtils {
 
+    /**
+     *
+     */
     public static imageUtils T;
     private HashMap<String, BufferedImage> Images = new HashMap<String, BufferedImage>();
 
+    /**
+     *
+     */
     public imageUtils() {
         T = this;
         LoadResoureces();
     }
 
+    /**
+     *
+     */
     public void LoadResoureces() {
         if (new File("resources/images/").exists()) {
             File f = new File("resources/images/");
@@ -50,33 +59,43 @@ public class imageUtils {
                 System.out.println("preloading image from /resources/images/ " + f2.getAbsolutePath());
             } else {
                 //form uri
-                String form = f2.getAbsolutePath().toString();
-                form = form.substring(form.indexOf("resources") + "resources".length());
-                form = form.replace('\\', '/');
-                System.out.println("preloading image " + form);
-                imageUtils.T.GetImage(form);
+                String from = f2.getAbsolutePath().toString();
+                from = from.substring(from.indexOf("resources") + "resources".length());
+                from = from.replace('\\', '/');
+                System.out.println("preloading image " + from);
+                imageUtils.T.GetImage(from);
             }
         }
     }
 
+    /**
+     *
+     * @param URI
+     * @return
+     */
     public BufferedImage GetImage(String URI) {
         return GetImage(URI, false);
     }
 
-    private BufferedImage GetImage(String URI, boolean isDefault) {
+    /**
+     *
+     * @param URI
+     * @param isDefault
+     */
+    private synchronized BufferedImage GetImage(String URI, boolean isDefault) {
         URI = "" + URI;
         BufferedImage g = null;
-        if (Images.containsKey(URI)) {
+        if (T.Images.containsKey(URI)) {
             try {
                 throw new Exception();
             } catch (Exception e) {
 //                System.out.println("Image loaded " + URI + " in " + e.getStackTrace()[isDefault ? 2 : 3].getClassName());
             }
-            return Images.get(URI);
+            return T.Images.get(URI);
         } else {
             try {
                 g = ImageIO.read(getClass().getResourceAsStream(URI));
-                Images.put(URI, g);
+                T.Images.put(URI, g);
                 try {
                     throw new Exception();
                 } catch (Exception e) {
@@ -91,8 +110,13 @@ public class imageUtils {
         return GetImage("/images/defualt.png", true);
     }
 
+    /**
+     *
+     * @param Name
+     * @param img
+     */
     public void setImage(String Name, BufferedImage img) {
-        Images.put(Name, img);
+        T.Images.put(Name, img);
     }
 
 }

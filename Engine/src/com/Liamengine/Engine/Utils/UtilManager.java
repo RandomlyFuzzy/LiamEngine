@@ -10,15 +10,22 @@ import com.Liamengine.Engine.Utils.MusicUtils;
 
 /**
  *
- * @author RandomlyFuzzy
+ * @author Liam Woolley 1748910
  */
 public class UtilManager {
 
+    /**
+     *
+     */
     public UtilManager() {
         new imageUtils();
         new MusicUtils();
     }
 
+    /**
+     *
+     * @param depth
+     */
     public static void FindUseClass(int depth) {
         try {
             throw new Exception();

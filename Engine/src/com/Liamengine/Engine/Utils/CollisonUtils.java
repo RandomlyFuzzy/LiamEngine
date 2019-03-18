@@ -12,10 +12,18 @@ import java.util.ArrayList;
 
 /**
  *
- * @author RandomlyFuzzy
+ * @author Liam Woolley 1748910
  */
 public class CollisonUtils {
 
+    /**
+     *
+     * @param a
+     * @param b
+     * @param c
+     * @param d
+     * @return
+     */
     public static Collison CheckForLineHits(Vector a, Vector b, Vector c, Vector d) {
 
         Vector r = new Vector(b.getX() - a.getX(), b.getY() - a.getY());

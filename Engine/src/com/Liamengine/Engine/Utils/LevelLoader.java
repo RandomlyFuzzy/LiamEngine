@@ -13,24 +13,47 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author RandomlyFuzzy
+ * @author Liam Woolley 1748910
  */
 public class LevelLoader {
 
+    /**
+     *
+     */
     public static LevelLoader LL = new LevelLoader();
-   
+
     private ArrayList<ILevel> LEVELS = new ArrayList<ILevel>();
 
-    public void SetLevels(ILevel[] Levels){
-        for(ILevel Level:Levels){
+    /**
+     *
+     * @param Levels
+     */
+    public void SetLevels(ILevel[] Levels) {
+        for (ILevel Level : Levels) {
             LEVELS.add(Level);
         }
     }
-    LevelLoader(){};
 
+    LevelLoader() {}
+
+    /**
+     *
+     * @param level
+     */
     public static void LoadLevel(ILevel level) {
-        Game.SetLevelActive(level);
+        try {
+            Game.SetLevelActive(level.getClass().newInstance());
+        } catch (InstantiationException ex) {
+            Logger.getLogger(LevelLoader.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(LevelLoader.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+
+    /**
+     *
+     * @param level
+     */
     public static void LoadLevel(String level) {
         boolean found = false;
         for (ILevel i : LL.LEVELS) {
@@ -40,17 +63,18 @@ public class LevelLoader {
                     Game.SetLevelActive(i.getClass().newInstance());
                     found = true;
                 } catch (IllegalAccessException ex) {
+                    System.err.println("com.Liamengine.Engine.Utils.LevelLoader.LoadLevel() " + level);
                     Logger.getLogger(LevelLoader.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (InstantiationException ex) {
+                    System.err.println("com.Liamengine.Engine.Utils.LevelLoader.LoadLevel() " + level);
                     Logger.getLogger(LevelLoader.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
-        if(!found){
-            System.err.println("failed to load level named "+level);
+        if (!found) {
+            System.err.println("failed to load level named " + level);
             UtilManager.FindUseClass(2);
         }
     }
-    
-  
+
 }
