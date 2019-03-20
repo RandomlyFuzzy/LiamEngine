@@ -5,7 +5,7 @@
  */
 package com.Liamengine.Engine.AbstractClasses;
 
-import com.Liamengine.Engine.Components.Vector; 
+import com.Liamengine.Engine.Components.Vector;
 import com.Liamengine.Engine.Utils.UtilManager;
 import com.Liamengine.Engine.Utils.imageUtils;
 import com.Liamengine.Engine.Entry.Game;
@@ -27,32 +27,31 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
- * this is the most utilize class it has most of the fucntionality 
- * and accessabilty to the rest(things that might be needed in the 
- * ILevel classes) it also can utilize another object IComponentss 
- * which can be see as attached to the this object
- * 
+ * this is the most utilize class it has most of the functionality and
+ * accessibility to the rest(things that might be needed in the ILevel classes)
+ * it also can utilize another object IComponentss which can be see as attached
+ * to the this object
+ *
  * @see com.Liamengine.Engine.Componentss.Transform
- * 
+ *
  * @author Liam Woolley 1748910
  */
 public abstract class IDrawable {
 
-
     /**
-     * basic check to see if the object has been supered
-     * can cause some errors if not 
+     * basic check to see if the object has been supered can cause some errors
+     * if not
      */
     private boolean hasSupered = false;
 
     /**
-     * postition utilised by the transform to translate the object
-     * its also the what the bounding box will read from to get the correct values
+     * position utilised by the transform to translate the object its also the
+     * what the bounding box will read from to get the correct values
      */
     private Vector position;
     /**
-     * offset from the position utilized by the transform to translate the object further than the postition
-     * but still utilized in the boading box
+     * offset from the position utilized by the transform to translate the
+     * object further than the position but still utilized in the bounding box
      */
     private Vector Toffset = Vector.Zero();
 
@@ -66,76 +65,81 @@ public abstract class IDrawable {
     private int spriteHeight = 0;
     /**
      * rotation utilized by the transform to rotate the object along the Z Plane
-     * its also the what the bounding box will read from to get the correct values
+     * its also the what the bounding box will read from to get the correct
+     * values
      */
     private double Rotation = 0;
     /**
-     * offset from the rotation utilized by the transform to rotate the object further than the rotation
-     * but still utilized in the boading box
+     * offset from the rotation utilized by the transform to rotate the object
+     * further than the rotation but still utilized in the bounding box
      */
     private double offset = 0;
     /**
-     * Scale utilized by the transform to scale the object along the x,y Planes
-     * its also the what the bounding box will read from to get the correct values
-    */
+     * Scale utilised by the transform to scale the object along the x,y Planes
+     * its also the what the bounding box will read from to get the correct
+     * values
+     */
     private Vector Scale = Vector.One();
     /**
-     * will enable or disable the object respectivly
-     * please note that it stops rendering and turn off the collisions updating 
-    */
+     * will enable or disable the object respectively please note that it stops
+     * rendering and turn off the collisions updating
+     */
     private boolean Enabled = true;
     /**
      * boolean set if is colliding with anything
-     * 
+     *
      * @see ILevel#checkCollionsions
      * @see ILevel#paintComponents
-    */
+     */
     private boolean isColliding = false;
     /**
-     * boolean to make it collidable with other IDrawable objects
-     * 
+     * boolean to make it able to collide with other IDrawable objects
+     *
      * @see ILevel#checkCollionsions
-    */
+     */
     private boolean isCollidable = true;
     /**
-     * boolean to make it utilzes the transformations natively
+     * boolean to make it utilises the transformations natively
+     *
      * @see IDrawable#CoreUpdate
-    */
+     */
     private boolean useTransforms = true;
     /**
-     * last loaded image 
-     * note can be set with 
+     * last loaded image note can be set with
+     *
      * @see IDrawable#setLastImage
-     * 
-     * but also set when loading a sprite too 
+     *
+     * but also set when loading a sprite too
      * @see IDrawable#GetSprite
-    */
+     */
     private BufferedImage LastImage = null;
     /**
-     * last loaded image address
-     * note will not be unset if using 
+     * last loaded image address note will not be unset if using
+     *
      * @see IDrawable#setLastImage
-     * 
-     * but will be set if using the  
+     *
+     * but will be set if using the
      * @see IDrawable#GetSprite
-    */
+     */
     private String LastimageAddress = "";
     /**
-     * set when the object is created 
+     * set when the object is created
+     *
      * @see #IDrawable
-    */
+     */
     private String LoadedLevel = "";
     /**
-     * this is the thing that does the transformations for this clas it also scales according to the world scale
-     * 
+     * this is the thing that does the transformations for this class it also
+     * scales according to the world scale
+     *
      * @see com.Liamengine.Engine.Entry.Game#CalculateDims
      * @see com.Liamengine.Engine.Entry.Game#WorldScale
      */
     private Transform transform;
 
     /**
-     * all 4 vertexes for the polygon collisions 
-     * 
+     * all 4 vertexes for the polygon collisions
+     *
      * @see IDrawable#UpdateBounds
      * @see IDrawable#getBounds
      * @see IDrawable#checkForIntersections
@@ -148,15 +152,15 @@ public abstract class IDrawable {
 
     /**
      * for storing all the Components created on this object type
-     * 
+     *
      * @see IDrawable#AddComponents
      * @see IDrawable#CoreUpdate
      */
     private ArrayList<IComponent> Components = new ArrayList<IComponent>();
 
-
     /**
-     * main constuctor of the class sets the intial postition transform object and the level it was in 
+     * main constuctor of the class sets the initial position transform object
+     * and the level it was in
      */
     public IDrawable() {
         transform = new Transform(this);
@@ -168,7 +172,7 @@ public abstract class IDrawable {
 
     /**
      *
-     * @return gets the postions offset not the position
+     * @return gets the positions offset not the position
      */
     public Vector getPoffset() {
         return Toffset;
@@ -176,17 +180,17 @@ public abstract class IDrawable {
 
     /**
      *
-     * @return gets the last loaded image address
-     * note it can be null if no las image
+     * @return gets the last loaded image address note it can be null if no las
+     * image
      */
     public String getLastimageAddress() {
         return LastimageAddress;
     }
 
     /**
-     * 
-     * @param img image you want to set as the currentl utilized image
-     * also updates the bounds of colliding 
+     *
+     * @param img image you want to set as the currently utilised image also
+     * updates the bounds of colliding
      */
     public void setLastimage(BufferedImage img) {
         LastImage = img;
@@ -197,14 +201,13 @@ public abstract class IDrawable {
     }
 
     /**
-     * 
+     *
      * @param Toffset sets object Toffset to that value
      */
     public void setPoffset(Vector Toffset) {
         this.Toffset = Toffset;
     }
 
-    
     /**
      *
      * @param spriteWidth sets object spriteWidth to that value
@@ -224,18 +227,19 @@ public abstract class IDrawable {
     }
 
     /**
-     * 
+     *
      * @return the variable IsCollidable 
-     * note utilzie quite alot 
-     * (would link to player.domove but is a seperate package)
+     * 
      */
     public boolean IsCollidable() {
         return isCollidable;
     }
 
     /**
-     * used to stop collisions if graphical or background fucntionality is needed
-      * @param isCollidable sets object isCollidable to that value
+     * used to stop collisions if graphical or background functionality is
+     * needed
+     *
+     * @param isCollidable sets object isCollidable to that value
      */
     public void setIsCollidable(boolean isCollidable) {
         this.isCollidable = isCollidable;
@@ -257,12 +261,10 @@ public abstract class IDrawable {
         this.useTransforms = useTransforms;
     }
 
-  
-
     /**
      *
-     * @return the rotation of the object Rotation
-     * note doesnt add the offset rotation
+     * @return the rotation of the object Rotation note doesn't add the offset
+     * rotation
      * @see IDrawable#getOffset
      */
     public double getRotation() {
@@ -271,16 +273,16 @@ public abstract class IDrawable {
 
     /**
      *
-     * @return gets the core object scale with out the world scale taken into account
+     * @return gets the core object scale with out the world scale taken into
+     * account
      */
     public Vector getScale() {
         return Scale;
     }
-
     /**
      *
      * @param Rotation sets object Rotation to that value
-     * 
+     *
      */
     public void setRotation(double Rotation) {
         this.Rotation = Rotation;
@@ -324,9 +326,9 @@ public abstract class IDrawable {
     }
 
     /**
-     * wrapping function to get the current Level from game
-     * used alot so this is easier
-     * 
+     * wrapping function to get the current Level from game used a lot so this is
+     * easier
+     *
      * @return the Current Level
      */
     public ILevel Level() {
@@ -334,8 +336,9 @@ public abstract class IDrawable {
     }
 
     /**
-     * Wrapper for the getting the upwards vector using 
-     * polar to cartesian coordinates math#
+     * Wrapper for the getting the upwards vector using polar to cartesian
+     * coordinates math#
+     *
      * @return the relative up vector of the object
      */
     public Vector GetUp() {
@@ -343,16 +346,17 @@ public abstract class IDrawable {
     }
 
     /**
-     * Wrapper for the getting the upwards vector using 
-     * polar to cartesian coordinates math
-     * @return the relative rigth vector of the object
+     * Wrapper for the getting the upwards vector using polar to cartesian
+     * coordinates math
+     *
+     * @return the relative right vector of the object
      */
     public Vector GetRight() {
         return transform.GetRight();
     }
 
     /**
-     * 
+     *
      * @return gets the total rotation with offset and base rotation
      */
     public double getTotalRotation() {
@@ -361,11 +365,13 @@ public abstract class IDrawable {
 
     /**
      *
-     * updates the bounds of the collision box 
-     * uses trigonometry (tan) with the relative sprite width and height (x,y)  
-     * then scales by the hypotinuse then converted from polar to cartesian coordinates and adds the offset and postition 
-     * 
+     * updates the bounds of the collision box uses trigonometry (tan) with the
+     * relative sprite width and height (x,y) then scales by the hypotinuse then
+     * converted from polar to cartesian coordinates and adds the offset and
+     * position
+     *
      * it is used whenever it is moved scaled or rotated or the image is changed
+     *
      * @see IDrawable#setPosition
      * @see IDrawable#setPoffset
      * @see IDrawable#setRotation
@@ -392,7 +398,7 @@ public abstract class IDrawable {
 
     /**
      *
-     * 
+     *
      * @return the bounds of the object in a polygon object as a rectangle
      */
     public Polygon getBounds() {
@@ -410,9 +416,10 @@ public abstract class IDrawable {
 
         return g;
     }
+
     /**
      *
-     * @param g obejct to check against
+     * @param g object to check against
      * @return whether or not it is colliding with the object g
      */
     public boolean checkForIntersections(Polygon g) {
@@ -425,44 +432,45 @@ public abstract class IDrawable {
     }
 
     /**
-     * check for a collsion between this object and another (t);
+     * check for a collision between this object and another (t);
+     *
      * @param t the object to check for a collision with
-     * @return whithee
+     * @return whether or not it collided with that object
      */
     public boolean CheckCollions(IDrawable t) {
         if (checkForIntersections(t.getBounds())) {
 //            System.out.println("com.FuturePixels.Utils.IDrawable.CheckCollions()");
             if (t.isEnabled() == true) {
-//#################################################update and remove this :/######################################################################
+            //#################################################update and remove this :/######################################################################
                 onCollison(t);
                 return true;
             }
         }
         return false;
     }
+
     /**
-     * wrapper for the imageutils
-     * @return gets the object if it exsists else the defualt image
+     * wrapper for the image utils
+     *
+     * @return gets the object if it exists else the default image
      */
     BufferedImage GetImage(String URI) {
         return imageUtils.T.GetImage(URI);
     }
 
     /**
-     *  sets an image in the image util to the image presented
-     * 
-     * @param name to save it as in the utils hashmap
+     * sets an image in the image util to the image presented
+     *
+     * @param name to save it as in the image utils
      * @param img the object to save
      */
     public void SetImage(String name, BufferedImage img) {
         imageUtils.T.setImage(name, img);
     }
 
-    
-
     /**
      *
-     * @return an instance of the postition (just incase get overwritten)
+     * @return an instance of the position (just incase get overwritten)
      */
     public Vector getPosition() {
         return new Vector(this.position);
@@ -479,8 +487,9 @@ public abstract class IDrawable {
 
     /**
      *
-     * @param URI 
-     * @return this object (done like this can be done to this object in the ILevel class afterwards)
+     * @param URI
+     * @return this object (done like this can be done to this object in the
+     * ILevel class afterwards)
      */
     public IDrawable GetSprite(String URI) {
         if (!LastimageAddress.equals(URI)) {
@@ -517,7 +526,7 @@ public abstract class IDrawable {
 
     /**
      *
-     * @return the sprite height 
+     * @return the sprite height
      */
     public int getSpriteHeight() {
         return spriteHeight;
@@ -533,7 +542,7 @@ public abstract class IDrawable {
 
     /**
      *
-     * @return the localscaled sprite height 
+     * @return the local scaled sprite height
      */
     public float getScaledSpriteHeight() {
         return spriteHeight * getScale().getY();
@@ -541,14 +550,14 @@ public abstract class IDrawable {
 
     /**
      *
-     * @return the localscaled sprite width 
+     * @return the local scaled sprite width
      */
     public float getScaledSpriteWidth() {
         return spriteWidth * getScale().getX();
     }
 
     /**
-     * just returns it as a string 
+     * just returns it as a string
      */
     @Override
     public String toString() {
@@ -557,10 +566,11 @@ public abstract class IDrawable {
 
     /**
      * this is for getting components added to the class
-     * 
-     * 
+     *
+     *
      * @param <T> type you want to get
-     * @param g randomobject ( because generic functions have to have a paramiter for this sort of opperation in java)
+     * @param g StaticObject ( because generic functions have to have a
+     * paramiter for this sort of operation in java)
      * @return the component with the same name in this object
      */
     public <T extends IComponent> T getComponents(T g) {
@@ -575,8 +585,9 @@ public abstract class IDrawable {
 
     /**
      * this is what happens when the object is added to level
+     *
      * @see ILevel#AddObject
-    */
+     */
     void CoreInit() {
         //basic check to find the buggy class as it had not suped itself in the constructor 
         if (!hasSupered) {
@@ -589,8 +600,7 @@ public abstract class IDrawable {
     }
 
     /**
-     * this is the core update to the object 
-     * this is run every frame 
+     * this is the core update to the object this is run every frame
      */
     void CoreUpdate(Graphics2D g) {
         //check to see if enabled 
@@ -669,8 +679,10 @@ public abstract class IDrawable {
     }
 
     /**
-     * draws the last loaded image centered to the position with the offset taken into account
-     * @param g the graphcial context to drawto
+     * draws the last loaded image centered to the position with the offset
+     * taken into account
+     *
+     * @param g the graphical context to draw to
      */
     public synchronized void DrawLastLoadedImage(Graphics2D g) {
         if (LastImage == null) {
@@ -680,12 +692,14 @@ public abstract class IDrawable {
                 System.err.println("error Drawing last image as their was not last image in " + e.getStackTrace()[1] + " try pre loading it in init() to get rid of this warning");
             }
         } else {
-            g.drawImage(LastImage, (int)Toffset.getX()+(int) -(getSpriteWidth()) / 2, (int)Toffset.getY()+(int) -(getSpriteHeight()) / 2, (int) (getSpriteWidth()), (int) (getSpriteHeight()), null);
-        } 
+                g.drawImage(LastImage, (int) Toffset.getX() + (int) -(getSpriteWidth()) / 2, (int) Toffset.getY() + (int) -(getSpriteHeight()) / 2, (int) (getSpriteWidth()), (int) (getSpriteHeight()), null);
+        }
     }
+
     /**
-     * draws the last loaded image as a sprite sheet 
-     * @param g the graphcial context to drawto
+     * draws the last loaded image as a sprite sheet
+     *
+     * @param g the graphical context to draw to
      * @see #SpriteSheet
      */
     public synchronized void DrawLastLoadedImageAsSpriteSheet(Graphics2D g, SpriteSheet she) {
@@ -696,18 +710,16 @@ public abstract class IDrawable {
                 System.err.println("error Drawing last image as their was not last image in " + e.getStackTrace()[1] + " try pre loading it in init() to get rid of this warning");
             }
         } else {
-//            she.inputImage(LastImage);
             setSpriteWidth(she.GetSegWidth());
             setSpriteHeight(she.GetSegHeight());
-            UpdateBounds();
-            she.DrawFromGraphic(g, LastImage, (int)Toffset.getX()+(int) -(getSpriteWidth()) / 2, (int)Toffset.getY()+(int) -(getSpriteHeight()) / 2, (int) (getSpriteWidth()) / 2, (int) (getSpriteHeight()) / 2);
+            she.DrawFromGraphic(g, LastImage, (int) Toffset.getX() + (int) -(getSpriteWidth()) / 2, (int) Toffset.getY() + (int) -(getSpriteHeight()) / 2, (int) (getSpriteWidth()) / 2, (int) (getSpriteHeight()) / 2);
 
         }
     }
 
     /**
      *
-     * @return the last loaded image 
+     * @return the last loaded image
      */
     public BufferedImage getLastImage() {
         return LastImage;
@@ -715,7 +727,7 @@ public abstract class IDrawable {
 
     /**
      * disposes everything need partaining to the object
-     * 
+     *
      * @see ILevel#dispose
      */
     public void dispose() {
@@ -733,9 +745,7 @@ public abstract class IDrawable {
 
     /**
      *
-     * @return this gets the objects top Line/side as Vectors
-     * [0] start
-     * [1] end
+     * @return this gets the objects top Line/side as Vectors [0] start [1] end
      * reliative to world not each other or the postition of the object
      */
     public Vector[] sideUp() {
@@ -748,9 +758,7 @@ public abstract class IDrawable {
 
     /**
      *
-     * @return this gets the objects left Line/side as Vectors
-     * [0] start
-     * [1] end
+     * @return this gets the objects left Line/side as Vectors [0] start [1] end
      * reliative to world not each other or the postition of the object
      */
     public Vector[] sideLeft() {
@@ -762,9 +770,7 @@ public abstract class IDrawable {
 
     /**
      *
-     * @return this gets the objects down Line/side as Vectors
-     * [0] start
-     * [1] end
+     * @return this gets the objects down Line/side as Vectors [0] start [1] end
      * reliative to world not each other or the postition of the object
      */
     public Vector[] sideDown() {
@@ -776,10 +782,8 @@ public abstract class IDrawable {
 
     /**
      *
-     * @return this gets the objects right Line/side as Vectors
-     * [0] start
-     * [1] end
-     * reliative to world not each other or the postition of the object
+     * @return this gets the objects right Line/side as Vectors [0] start [1]
+     * end reliative to world not each other or the postition of the object
      */
     public Vector[] sideRight() {
         if (vert3 == null || vert4 == null) {
@@ -807,7 +811,7 @@ public abstract class IDrawable {
 
     /**
      *
-     * @return returns whether or not is colliding 
+     * @return returns whether or not is colliding
      */
     public boolean isColliding() {
         return isColliding;
@@ -823,27 +827,29 @@ public abstract class IDrawable {
 
     /**
      * runs once when the object is created
+     *
      * @see ILevel#AddObject
      */
     public abstract void init();
 
     /**
-     * runs every frame 
-     * is used for setting up to be displayed
+     * runs every frame is used for setting up to be displayed
+     *
      * @see ILevel#actionPerformed
      */
     public abstract void doMove();
 
     /**
-     * runs every frame 
-     * is used for graphical purposes
+     * runs every frame is used for graphical purposes
+     *
      * @param g
      */
     public abstract void Update(Graphics2D g);
 
     /**
      * runs when the object is detected to collide with another object
-     * @param im the object it collides with 
+     *
+     * @param im the object it collides with
      */
     public abstract void onCollison(IDrawable im);
 }

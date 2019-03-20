@@ -13,7 +13,11 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
 /**
- *
+ * this is what transforms all the IDrawable objects in the game
+ * does it through remebering the old transformations 
+ * doing the tranformation
+ * reseting to old transforms
+ * 
  * @author Liam Woolley 1748910
  */
 public class Transform extends IComponent {
@@ -21,25 +25,33 @@ public class Transform extends IComponent {
     private AffineTransform old;
 
     /**
-     *
+     *  the postition of the object
      */
     public Vector Translation = Vector.Zero();
 
     /**
-     *
+     * the scale of the object
      */
     public Vector Scale = Vector.One();
 
     /**
-     *
+     * the rotation of the obejct
      */
     public double RotationZ = 0;
+    /**
+     * this is used for the Camera like movement its a universal translation of everything
+     */
     private static Vector offsetTranslation = Vector.Zero();
+    /**
+     * universal world scale 
+     * @see Game#CalculateDims
+     * @see Game#WorldScale
+     */
     private static Vector WorldScale = new Vector(1, 1);
 
     /**
      *
-     * @return
+     * @return gets the current camera translation
      */
     public static Vector getOffsetTranslation() {
         return offsetTranslation;
@@ -47,7 +59,7 @@ public class Transform extends IComponent {
 
     /**
      *
-     * @param offsetTranslation
+     * @param offsetTranslation sets the current camera translation
      */
     public static void setOffsetTranslation(Vector offsetTranslation) {
         Transform.offsetTranslation = offsetTranslation;
@@ -56,34 +68,23 @@ public class Transform extends IComponent {
 
     /**
      *
-     * @param parent
+     * @param parent the object it was create from
      */
     public Transform(IDrawable parent) {
         super(parent);
     }
 
     /**
-     *
+     * not in use 
      */
     @Override
-    public void Init() {
-        Scale = getParent().getScale();
-        Translation = getParent().getPosition();
-        RotationZ = getParent().getRotation();
-    }
+    public void Init() {}
+    @Override
+    public void Update(Graphics2D g) {}
 
     /**
      *
-     * @param g
-     */
-    @Override
-    public void Update(Graphics2D g) {
-
-    }
-
-    /**
-     *
-     * @param g
+     * @param g the graphical context to push the transfomations too
      */
     public void PushTransforms(Graphics2D g) {
         Scale = getParent().getScale();
@@ -92,7 +93,9 @@ public class Transform extends IComponent {
         WorldScale = Game.WorldScale();
 
         old = g.getTransform();
-        g.translate(((((int) Translation.getX())) + offsetTranslation.getX())*WorldScale.getX(), ((((int) Translation.getY())) + offsetTranslation.getY())*WorldScale.getX());
+        g.translate(
+            ((((int) Translation.getX())) + offsetTranslation.getX())*WorldScale.getX(), 
+            ((((int) Translation.getY())) + offsetTranslation.getY())*WorldScale.getX());
         g.rotate((RotationZ) + getParent().getOffset());
         g.scale(Scale.getX() * WorldScale.getX(), Scale.getY() * WorldScale.getY());
         Scale = null;
@@ -100,8 +103,20 @@ public class Transform extends IComponent {
     }
 
     /**
+     * 
+     * @param g the graphical context to reset
+     */
+    public void PopTransforms(Graphics2D g) {
+        g.setTransform(old);
+        old = null;
+    }
+
+
+    
+    /**
      *
-     * @return
+     * @return the world scales x component
+     * @see Game#WorldScale
      */
     public static float GetWorldScaleX() {
         return WorldScale.getX();
@@ -109,32 +124,25 @@ public class Transform extends IComponent {
 
     /**
      *
-     * @return
+     * @return the world scales y component
+     * @see Game#WorldScale
      */
     public static float GetWorldScaleY() {
         return WorldScale.getY();
     }
 
-    /**
-     *
-     * @param g
-     */
-    public void PopTransforms(Graphics2D g) {
-        g.setTransform(old);
-        old = null;
-    }
 
     /**
      *
-     * @return
+     * @return the relative upwards vector in a noramlized form (x+y = 1)
      */
     public Vector GetUp() {
         return new Vector((float) Math.sin(RotationZ), (float) -Math.cos(RotationZ));
     }
 
-    /**
+       /**
      *
-     * @return
+     * @return the relative rightwards vector in a noramlized form (x+y = 1)
      */
     public Vector GetRight() {
         return new Vector((float) Math.sin(RotationZ + Math.PI / 2), (float) -Math.cos(RotationZ + Math.PI / 2));

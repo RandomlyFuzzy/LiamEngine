@@ -14,27 +14,35 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 
 /**
- *
+ * this is the main storage and loading util for buffered 
+ * images it can save load and put images into the local storage
+ * 
+ * 
+ * 
  * @author Liam Woolley 1748910
  */
 public class imageUtils {
 
     /**
-     *
+     * static reference of self
      */
     public static imageUtils T;
+    /**
+     * string Buffered image dictionary
+     */
     private HashMap<String, BufferedImage> Images = new HashMap<String, BufferedImage>();
 
     /**
-     *
+     * contructor only runs onces at games start
      */
     public imageUtils() {
         T = this;
+        //recursive function to preload all images before starting
         LoadResoureces();
     }
 
     /**
-     *
+     * this is used to start of pre loading all images in the resources/images/ directory
      */
     public void LoadResoureces() {
         if (new File("resources/images/").exists()) {
@@ -51,18 +59,28 @@ public class imageUtils {
         }
     }
 
-    //recursive function reaching into all the sub folders
+    /**
+     * recursive function reaching into all the sub folders of resources/images/
+     */
     private void LoadDir(File dir) {
+        //finds all files and folders in the directory
         for (File f2 : dir.listFiles()) {
+            //if is a directoy
             if (f2.isDirectory()) {
+                // run this funcation on that directory
                 LoadDir(f2);
+                //say what is being loaded
                 System.out.println("preloading image from /resources/images/ " + f2.getAbsolutePath());
             } else {
-                //form uri
+                // gets the Absoulute URI of the file
                 String from = f2.getAbsolutePath().toString();
+                // trims so its the same as all the other calls to the diectionary
                 from = from.substring(from.indexOf("resources") + "resources".length());
+                //replace \ with /
                 from = from.replace('\\', '/');
+                // says it been preloaded
                 System.out.println("preloading image " + from);
+                //loads image to dictionary
                 imageUtils.T.GetImage(from);
             }
         }
@@ -70,8 +88,8 @@ public class imageUtils {
 
     /**
      *
-     * @param URI
-     * @return
+     * @param URI local file address
+     * @return the bufferimage of the file if exsists
      */
     public BufferedImage GetImage(String URI) {
         return GetImage(URI, false);
@@ -79,8 +97,8 @@ public class imageUtils {
 
     /**
      *
-     * @param URI
-     * @param isDefault
+     * @param URI local file address
+     * @param isDefault used the second run of this function to get defualt image
      */
     private synchronized BufferedImage GetImage(String URI, boolean isDefault) {
         URI = "" + URI;
@@ -112,8 +130,8 @@ public class imageUtils {
 
     /**
      *
-     * @param Name
-     * @param img
+     * @param Name what its going to be saved as
+     * @param img buffer image to save
      */
     public void setImage(String Name, BufferedImage img) {
         T.Images.put(Name, img);

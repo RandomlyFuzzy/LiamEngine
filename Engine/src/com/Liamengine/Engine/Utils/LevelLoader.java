@@ -12,33 +12,47 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Level loader util needs to have all the 
+ * ILevels preplaced in before creating the game object
+ * 
+ * @see LevelLoader#SetLevels
+ * 
+ * 
  * @author Liam Woolley 1748910
  */
 public class LevelLoader {
 
     /**
-     *
+     * static reference if its self to be called exsternally
      */
     public static LevelLoader LL = new LevelLoader();
 
+
+    /**
+     * collection of all the Level that can be loaded by string 
+     */
     private ArrayList<ILevel> LEVELS = new ArrayList<ILevel>();
 
     /**
      *
-     * @param Levels
+     * @param Levels all the level wanted to be placed into the scene
      */
     public void SetLevels(ILevel[] Levels) {
         for (ILevel Level : Levels) {
             LEVELS.add(Level);
         }
     }
-
+    /**
+     * basic empty contructor for LL
+     */
     LevelLoader() {}
 
     /**
      *
-     * @param level
+     * @param level Level to be created
+     * note is an instance of that level 
+     * if it has paramiters use the Game class
+     * @see Game#SetLevelActive
      */
     public static void LoadLevel(ILevel level) {
         try {
@@ -52,7 +66,7 @@ public class LevelLoader {
 
     /**
      *
-     * @param level
+     * @param level name of the level to be loaded
      */
     public static void LoadLevel(String level) {
         boolean found = false;

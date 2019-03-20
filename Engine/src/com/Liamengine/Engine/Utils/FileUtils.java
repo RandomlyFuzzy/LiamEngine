@@ -16,15 +16,18 @@ import java.util.logging.Logger;
 import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
 /**
- *
+ * this is used for simple file operation like read write 
+ * and append to make life easier
+ * 
+ * 
  * @author Liam Woolley 1748910
  */
 public class FileUtils {
 
     /**
      *
-     * @param URI
-     * @return
+     * @param URI local file address
+     * @return the contence of a file if exsist else just and empty string 
      */
     public static String GetFileContence(String URI) {
         String str = "";
@@ -54,9 +57,9 @@ public class FileUtils {
 
     /**
      *
-     * @param URI
-     * @param Data
-     */
+     * @param URI local file address
+     * @param Data the data to set the contence to
+     */ 
     public static void SetFileContence(String URI, String Data) {
         File file = new File(URI);
         if (!file.exists()) {
@@ -79,8 +82,8 @@ public class FileUtils {
 
     /**
      *
-     * @param URI
-     * @param Data
+     * @param URI local file address
+     * @param Data data to append to the end of the file
      */
     public static void AppendToFile(String URI, String Data) {
         String contence = GetFileContence(URI);
@@ -89,8 +92,8 @@ public class FileUtils {
 
     /**
      *
-     * @param URI
-     * @param regex
+     * @param URI local file address
+     * @param regex a regular expression to split when mached
      * @return
      */
     public static String[] GetFileSplit(String URI, String regex) {
@@ -110,14 +113,13 @@ public class FileUtils {
     /**
      *
      * @param URI
-     * @param regex
-     * @param AsCollection
+     * @param regex a regular expression to split when mached
+     * @param AsCollection arbitary vaiable just because of java method signitures 
      * @return
      */
     public static ArrayList<String> GetFileSplit(String URI, String regex, Object AsCollection) {
         ArrayList<String> ret = new ArrayList<String>();
         String[] contence = GetFileSplit(URI, regex);
-        System.out.println("com.FuturePixels.Engine.Utils.FileUtils.GetFileSplit() " + contence.length);
         for (String s : contence) {
             ret.add(s);
         }

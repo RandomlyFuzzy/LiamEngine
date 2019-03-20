@@ -66,12 +66,12 @@ public abstract class IComponent {
 
 
     /**
-     * package private function that runs when the level 
-     * is unloaded 
+     * public function that runs when the level 
+     * is unloaded intended to be overridden and supered to utilise  
      *
      * @see com.Liamengine.Engine.AbstractClasses.IDrawable#dispose
     */
-    void dispose() {
+    public void dispose() {
         Parent = null;
     }
 

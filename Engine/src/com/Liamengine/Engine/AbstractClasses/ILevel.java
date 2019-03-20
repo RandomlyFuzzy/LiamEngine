@@ -380,7 +380,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
     }
 
     /**
-     * what happenes when the level is first loaded
+     * what happenes when the level is loaded
      */
     public void OnStart() {
         setFocusable(true);
@@ -396,9 +396,13 @@ public abstract class ILevel extends JPanel implements ActionListener {
      * @return the obejct that was added
      */
     public synchronized <T extends IDrawable> T AddObject(T Drawable) {
-        gameObjs.add(Drawable);
-        //how the init in the object is ran
-        Drawable.CoreInit();
+        try{
+            gameObjs.add(Drawable);
+            //how the init in the object is ran
+            Drawable.CoreInit();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         return Drawable;
     }
 
