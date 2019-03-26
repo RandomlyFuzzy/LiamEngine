@@ -95,8 +95,8 @@ public class Transform extends IComponent {
         old = g.getTransform();
         g.translate(
             ((((int) Translation.getX())) + offsetTranslation.getX())*WorldScale.getX(), 
-            ((((int) Translation.getY())) + offsetTranslation.getY())*WorldScale.getX());
-        g.rotate((RotationZ) + getParent().getOffset());
+            ((((int) Translation.getY())) + offsetTranslation.getY())*WorldScale.getY());
+        g.rotate((RotationZ));
         g.scale(Scale.getX() * WorldScale.getX(), Scale.getY() * WorldScale.getY());
         Scale = null;
         Translation = null;

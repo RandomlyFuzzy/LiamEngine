@@ -27,13 +27,12 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
- * this is the first thing that is access in the engine it does all the level changing and 
- * window minipulation
- * 
+ * this is the first thing that is access in the engine it does all the level
+ * changing and window minipulation
+ *
  * @author Liam Woolley 1748910
  */
 public class Game {
-
 
     /**
      * if the current game is in full screen
@@ -48,9 +47,9 @@ public class Game {
      */
     private static final int WINDOW_HEIGHT = 720;
     /**
-     * the bounds of the current Jframe when the fullscreen is set 
-     * to be able to revert to it
-     * x,y,w,h
+     * the bounds of the current Jframe when the fullscreen is set to be able to
+     * revert to it x,y,w,h
+     *
      * @see Game#fullscreen
      */
     private static Rectangle FrameBounds;
@@ -60,12 +59,14 @@ public class Game {
     private static JFrame gameWindow;
     /**
      * used to calulate the milliseconds from last update
+     *
      * @see Game#getDelta
      * @see ILevel#getDelta
      */
     private static long deltalong = 0;
     /**
      * current frame delta time storage
+     *
      * @see Game#getDelta
      * @see ILevel#getDelta
      */
@@ -76,7 +77,8 @@ public class Game {
      */
     private static ILevel CurrentLevel;
     /**
-     * defualt level to fall back on 
+     * defualt level to fall back on
+     *
      * @see TAdapter#KeyPressed
      */
     private static ILevel DefualtLevel;
@@ -85,8 +87,8 @@ public class Game {
      */
     private static Cursor Swap;
     /**
-     * the last level loaded name 
-     * 
+     * the last level loaded name
+     *
      */
     private static String LastLevelName = "";
     /**
@@ -98,7 +100,7 @@ public class Game {
      */
     private static Vector worldDims = Vector.One();
     /**
-     * dev scaler for the world scale 
+     * dev scaler for the world scale
      */
     private static Vector worldrelDims = Vector.One();
 
@@ -132,7 +134,7 @@ public class Game {
     }
 
     /**
-     * creates a window to be draw  to
+     * creates a window to be draw to
      */
     public static void InitWindow() {
         //creats a new window
@@ -169,7 +171,7 @@ public class Game {
 
     /**
      *
-     * @return the default level 
+     * @return the default level
      * @see TAdapter#KeyPressed
      */
     public static ILevel getDefualtLevel() {
@@ -230,8 +232,8 @@ public class Game {
 
     /**
      *
-     * @param Level this will be the level that game will change too
-     * this sets the current level 
+     * @param Level this will be the level that game will change too this sets
+     * the current level
      * @see LevelLoader#LoadLevel
      */
     public synchronized static void SetLevelActive(ILevel Level) {
@@ -257,7 +259,8 @@ public class Game {
             System.gc();
         }
         //starting 
-        // Level.setPreferredSize(new Dimension(WINDOW_WIDTH / 2, WINDOW_HEIGHT));
+        //set currentlevel
+        CurrentLevel = Level;
         gameWindow.getContentPane().add(Level);
         //sets the layout manager of the game window incase not set
         CardLayout cl = (CardLayout) gameWindow.getContentPane().getLayout();
@@ -267,8 +270,7 @@ public class Game {
         Level.requestFocusInWindow();
         //Jpanel focus requst
         Level.requestFocus();
-        //set currentlevel
-        CurrentLevel = Level;
+
         //check to see if music should be stoped
         if (CurrentLevel.StopAudioOnStart()) {
             //if so stop all audio elements
@@ -335,12 +337,11 @@ public class Game {
         return LastLevelName;
     }
 
-
     /**
-     * updates the current delta time 
+     * updates the current delta time
      */
     public static void SetDelta() {
-        Long milli = System.currentTimeMillis();
+        Long milli = System.nanoTime();
         DeltaTime = milli - deltalong;
         deltalong = milli;
     }
@@ -350,13 +351,13 @@ public class Game {
      * @return the current frame delta time
      */
     public static float getDelta() {
-        return DeltaTime / 1000.0f;
+        return DeltaTime / 1000000000.0f;
     }
 
     /**
      *
-     * @return the current gameWindow width scaled to the world
-     * useful in game when the scale is changed
+     * @return the current gameWindow width scaled to the world useful in game
+     * when the scale is changed
      */
     public static int getScaledWidth() {
         return (int) ((float) gameWindow.getWidth() * (1f / Game.WorldScale().getX()));
@@ -396,7 +397,7 @@ public class Game {
 
     /**
      *
-     * @param worldrelDims the scaler of the world of the world 
+     * @param worldrelDims the scaler of the world of the world
      */
     public static void setWorldrelDims(Vector worldrelDims) {
         Game.worldrelDims = worldrelDims;

@@ -54,7 +54,7 @@ public class imageUtils {
             }
         } else {
             System.err.println("/resources/images/ folder missing reconstructing");
-            File f = new File("resources/images/");
+            File f = new File(System.getenv("user.dir")+"/../resources/images/");
             f.mkdir();
         }
     }
@@ -92,7 +92,7 @@ public class imageUtils {
      * @return the bufferimage of the file if exsists
      */
     public BufferedImage GetImage(String URI) {
-        return GetImage(URI, false);
+        return GetImage(System.getProperty("user.dir")+"/resources"+URI, false);
     }
 
     /**
@@ -112,7 +112,7 @@ public class imageUtils {
             return T.Images.get(URI);
         } else {
             try {
-                g = ImageIO.read(getClass().getResourceAsStream(URI));
+                g = ImageIO.read(new File(URI));
                 T.Images.put(URI, g);
                 try {
                     throw new Exception();
@@ -125,7 +125,7 @@ public class imageUtils {
             }
         }
 
-        return GetImage("/images/defualt.png", true);
+        return GetImage(System.getProperty("user.dir")+"/resources/images/defualt.png", true);
     }
 
     /**
@@ -134,7 +134,7 @@ public class imageUtils {
      * @param img buffer image to save
      */
     public void setImage(String Name, BufferedImage img) {
-        T.Images.put(Name, img);
+        T.Images.put(System.getProperty("user.dir")+"/resources"+Name, img);
     }
 
 }

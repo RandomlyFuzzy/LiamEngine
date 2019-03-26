@@ -11,7 +11,7 @@ import java.awt.Graphics2D;
 /**
  * This can be used to extend the functionality of 
  * the IDrawable class to add certain functionality
- * that would normaly need copy of the object it. 
+ * that would normally need copy of the object it. 
  * This functions under the IDrawable class and can be 
  * made very complex IDrawable objects
  * 

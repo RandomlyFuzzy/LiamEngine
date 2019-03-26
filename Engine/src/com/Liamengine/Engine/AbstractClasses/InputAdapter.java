@@ -23,11 +23,11 @@ public abstract class InputAdapter implements KeyListener, MouseListener, MouseM
      */
     public abstract void keyReleased(KeyEvent e);
     /**
-     * mouse pressed this happens
+     * OS mouse pressed this happens
      */
     public abstract void mousePressed(MouseEvent e);
     /**
-     * mouse released this happens
+     * OS mouse released this happens
      */
     public abstract void mouseReleased(MouseEvent e);
     /**
@@ -48,7 +48,7 @@ public abstract class InputAdapter implements KeyListener, MouseListener, MouseM
     public abstract void mouseMoved(MouseEvent e);
 
     
-    //not really used so culled from when it is extended from 
+    //not really used so not created when it is extended from 
     @Override
     public void keyTyped(KeyEvent e){}
     @Override

@@ -5,6 +5,9 @@
  */
 package com.Liamengine.Engine.Utils;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -21,9 +24,9 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
- * handles all the audio interactions and storage of the audio created
- * should have used the minim audio libary but this was already done so yeah
- * 
+ * handles all the audio interactions and storage of the audio created should
+ * have used the minim audio libary but this was already done so yeah
+ *
  * @author Liam Woolley 1748910
  */
 public class MusicUtils {
@@ -34,6 +37,7 @@ public class MusicUtils {
     private static ArrayList<MusicThread> sounds = new ArrayList<MusicThread>();
     /**
      * defualt volume
+     *
      * @see Musicutil#SetVolume
      * @see MusicThread#setVolume
      */
@@ -50,7 +54,7 @@ public class MusicUtils {
     /**
      *
      * @param soundResource local file address
-     * @param time start time of the audio 
+     * @param time start time of the audio
      * @see MusicThread#Search
      */
     public static void play(String soundResource, float time) {
@@ -60,7 +64,7 @@ public class MusicUtils {
     /**
      *
      * @param soundResource local file address
-     * @param time start time of the audio 
+     * @param time start time of the audio
      * @param LoopAmt amount of times to be looped
      * @see MusicThread#Search
      * @see #MusicThread
@@ -80,8 +84,7 @@ public class MusicUtils {
                     sounds.remove(mt);
                     //next i value
                     continue;
-                } else 
-                    //if is the currently searched for audio
+                } else //if is the currently searched for audio
                 if (mt.Path == soundResource) {
                     //its found so it doesnt need to be replayed
                     isPlaying = true;
@@ -91,24 +94,28 @@ public class MusicUtils {
         }
         //if not found or the collection is empty
         if (!isPlaying) {
-            //create new audio using sound resouce
-            MusicThread d = new MusicThread(soundResource);
-            //set to the default value
-            d.setVolume(val);
-            //go to this place in the audio clip
-            d.Search(time);
-            //set whether or not it should loop and how much
-            d.Loop(LoopAmt);
-            //start the clip
-            d.Start();
-            //add to the collection
-            sounds.add(d);
+            try {
+                //create new audio using sound resouce
+                MusicThread d = new MusicThread(soundResource);
+                //set to the default value
+                d.setVolume(val);
+                //go to this place in the audio clip
+                d.Search(time);
+                //set whether or not it should loop and how much
+                d.Loop(LoopAmt);
+                //start the clip
+                d.Start();
+                //add to the collection
+                sounds.add(d);
+            } catch (Exception ex) {
+                System.err.println("their was an error running " + soundResource);
+            }
         }
     }
 
     /**
-     * replay last audio added to the collection 
-     * if their was anyplayed before it and not finished
+     * replay last audio added to the collection if their was anyplayed before
+     * it and not finished
      */
     public static void playLastSound() {
         if (sounds.size() == 0) {
@@ -119,7 +126,7 @@ public class MusicUtils {
 
     /**
      *
-     * @param path path of the file to sop
+     * @param path path of the file to stop
      */
     public static void StopASounds(String path) {
         if (sounds.size() == 0) {
@@ -128,9 +135,9 @@ public class MusicUtils {
         sounds.forEach((A) -> {
             if (A.getPath() == path) {
                 A.Stop();
+                System.out.println("sound stopped of path " + path);
             }
         });
-        sounds = new ArrayList<MusicThread>();
     }
 
     /**
@@ -149,7 +156,7 @@ public class MusicUtils {
     /**
      *
      * @param Val value to set all the volumes to should be between 0.0 ... 1.0
-     * 
+     *
      */
     public static void SetVolume(float Val) {
         if (sounds.size() == 0) {
@@ -159,6 +166,13 @@ public class MusicUtils {
             A.setVolume(Val);
         });
         val = Val;
+    }
+
+    /**
+     * @return the current global volume
+     */
+    public static float GetVolume() {
+        return val;
     }
 
     /**
@@ -195,7 +209,6 @@ public class MusicUtils {
          */
         private Thread t = null;
 
-
         /**
          * @param Source the local uri of the audio file
          */
@@ -204,9 +217,11 @@ public class MusicUtils {
             try {
                 this.Path = Source;
                 clip = AudioSystem.getClip();
-                this.ais = AudioSystem.getAudioInputStream(getClass().getResourceAsStream(Source));
+                //this extra stream is needed for ioexception mark/reset that accurres 
+                FileInputStream is = new FileInputStream(new File("resources"+Source));
+                BufferedInputStream myStream = new BufferedInputStream(is); 
+                this.ais = AudioSystem.getAudioInputStream(myStream);
                 clip.open(ais);
-
             } catch (LineUnavailableException ex) {
                 Logger.getLogger(MusicUtils.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -220,7 +235,6 @@ public class MusicUtils {
 
         }
 
-        
         /**
          * @return returns the local definishion of finished
          */
@@ -231,6 +245,7 @@ public class MusicUtils {
             }
             return (finished && !isLooping) || stoped;
         }
+
         /**
          * @return gets the currently playing audio clip
          */
@@ -242,6 +257,9 @@ public class MusicUtils {
          * @param time set the current postition in the audio clip in seconds
          */
         public void Search(float time) {
+            if (time == 0) {
+                return;
+            }
             //check to see if past the file length
             if (time * clip.getFormat().getFrameRate() >= ais.getFrameLength()) {
                 System.err.println("input size to big");
@@ -260,20 +278,23 @@ public class MusicUtils {
             //creates a new thread
             t = new Thread(() -> {
                 try {
-                    //starts the audio
-                    clip.start();
-                    //waits the file duration (should be the file length - start place) in milliseconds
-                    Thread.sleep((int) ((ais.getFrameLength() / clip.getFormat().getFrameRate()) * 1000f));
-                    //if is not looping
-                    if (!isLooping) {
-                        //stop the music and define it as finsihed
-                        finished = true;
-                        Stop();
-                    }
-                    //stop the thread 
+                        //starts the audio
+                        clip.start();
+                        //waits the file duration (should be the file length - start place) in milliseconds
+                        Thread.sleep((int) ((ais.getFrameLength() / clip.getFormat().getFrameRate()) * 1000f));
+                        //if is not looping
+                        if (!isLooping) {
+                            //stop the music and define it as finsihed
+                            finished = true;
+                            Stop();
+                        }
+                        //stop the thread 
+
                     t.stop();
                 } catch (InterruptedException ex) {
                     Logger.getLogger(MusicUtils.class.getName()).log(Level.SEVERE, null, ex);
+                }catch(Exception ex){
+                    System.err.println("their was an error running "+Path);
                 }
             });
             //starts thread
@@ -285,10 +306,10 @@ public class MusicUtils {
          */
         public void Stop() {
             try {
+                stoped = true;
                 clip.stop();
                 clip.flush();
                 ais.close();
-                stoped = true;
             } catch (IOException ex) {
                 Logger.getLogger(MusicUtils.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -311,10 +332,13 @@ public class MusicUtils {
             //controls the audio volume
             FloatControl fc = null;
             //aparently there are multiple audio middleware and they use different things that why this is here
-            if (clip.getControl(FloatControl.Type.MASTER_GAIN) != null) {
+            if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
                 fc = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            } else {
+            } else if (clip.isControlSupported(FloatControl.Type.VOLUME)) {
                 fc = (FloatControl) clip.getControl(FloatControl.Type.VOLUME);
+            } else {
+                System.err.println("their is no volume control supported shutting down Audio");
+                return;
             }
             //maps the current volume from 0 ... 1 to minval ... max value
             // dont know the decibels gain so just did this generic implementation
@@ -323,7 +347,7 @@ public class MusicUtils {
         }
 
         /**
-         * 
+         *
          * @param X value to map
          * @param A X min
          * @param B X max
@@ -331,15 +355,14 @@ public class MusicUtils {
          * @param D map to max
          */
         private float Map(float X, float A, float B, float C, float D) {
-            return 
-            //offset the value to go to from 0 ... B - A
-            (X - A) 
-            //check to see how far it is to b relative to (percent and decimal 0 ... 1)
-            / (B - A) 
-            //mutiply that that by the map maximum offset to between 0 ... Max Map - Min map
-            * (D - C) 
-            // offset to the proper start position from 0 ... D-C to C ... D
-            + C;
+            return //offset the value to go to from 0 ... B - A
+                    (X - A)
+                    //check to see how far it is to b relative to (percent and decimal 0 ... 1)
+                    / (B - A)
+                    //mutiply that that by the map maximum offset to between 0 ... Max Map - Min map
+                    * (D - C)
+                    // offset to the proper start position from 0 ... D-C to C ... D
+                    + C;
         }
 
         //get the currently loaded file path

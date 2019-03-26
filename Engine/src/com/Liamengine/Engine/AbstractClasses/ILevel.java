@@ -30,30 +30,31 @@ import javax.sound.sampled.Clip;
 import jdk.nashorn.internal.parser.JSONParser;
 
 /**
- * 
+ *
  * this is the core Object runs the update loop and draws things to the screen
- * 
+ *
  * @see Game#SetLevelActive
  * @see LevelLoader#LoadLevel
- * 
+ *
  * @author Liam Woolley 1748910
  */
 public abstract class ILevel extends JPanel implements ActionListener {
 
-
     /**
-     * this is the object that makes the hookes into the Action listener and makes the Update loop happen
+     * this is the object that makes the hookes into the Action listener and
+     * makes the Update loop happen
      */
     private javax.swing.Timer timer;
 
     /**
-     * collection of all things that can be drawn on the screen
-     * it also hooks into the update loop in this object
+     * collection of all things that can be drawn on the screen it also hooks
+     * into the update loop in this object
      */
     private ArrayList<IDrawable> gameObjs = new ArrayList<IDrawable>();
 
     /**
      * total time elapsed in the level
+     *
      * @see ILevel#actionPerformed
      * @see ILevel#getTime
      */
@@ -65,43 +66,49 @@ public abstract class ILevel extends JPanel implements ActionListener {
 
     /**
      * the is the object that hookes into certain action listeners
+     *
      * @see #Inputadapter
      * @see ILevel#start
      * @see ILevel#stop
      */
     private TAdapter Inputadapter = null;
     /**
-     * this make all audio be stoped if the is true 
+     * this make all audio be stoped if the is true
+     *
      * @see Game#SetLevelActive
      */
     private boolean StopAudioOnStart = true;
 
     /**
-     * limits the amount of collisions to 1 per frame(useful in menus looks better)
+     * limits the amount of collisions to 1 per frame(useful in menus looks
+     * better)
+     *
      * @see ILevel#checkCollionsions
      */
     private boolean SimpleCollison = true;
     /**
-     * defualt backgound of the level
-     * if false then it doesnt run
+     * defualt backgound of the level if false then it doesnt run
      */
     private BufferedImage background;
 
     /**
-     * this is true of the mouse is draging(clicking and moving)
-     * if this is true then IsClicking is false
+     * this is true of the mouse is draging(clicking and moving) if this is true
+     * then IsClicking is false
+     *
      * @see ILevel#TAdapter#mouseDragged
      */
     private boolean IsDragging = false;
     /**
      * this is true when the mouse is on the screen and false if outside
+     *
      * @see TAdapter#mouseEntered
      * @see TAdapter#mouseExited
      */
     private boolean IsInside = true;
     /**
-     * this is true of the mouse is clicking ( not clicking and moving)
-     * if this is true then IsDragging is false
+     * this is true of the mouse is clicking ( not clicking and moving) if this
+     * is true then IsDragging is false
+     *
      * @see TAdapter#mouseDragged
      */
     private boolean IsClicking = false;
@@ -114,7 +121,8 @@ public abstract class ILevel extends JPanel implements ActionListener {
      */
     private KeyEvent LastKeyPress = null;
     /**
-     * this is storage of all the mouse pressed 
+     * this is storage of all the mouse pressed
+     *
      * @see ILevel#GetMouseButtonDown
      * @see TAdapter#mousePressed
      * @see TAdapter#mouseReleased
@@ -125,8 +133,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
      */
     private static Vector MousePos = new Vector(Vector.Zero());
     /**
-     * current frame rate of the sceen
-     * note can be dynamicaly changed
+     * current frame rate of the sceen note can be dynamicaly changed
      */
     private static int FPS = 60;
     /**
@@ -134,19 +141,24 @@ public abstract class ILevel extends JPanel implements ActionListener {
      */
     private static ILevel current;
     /**
-     * if this true then it shows the bouding boxes of all the collision 
+     * if this true then it shows the bouding boxes of all the collision
      */
     private static boolean DebugCollisons = false;
 
+    /**
+     * this is the defaultfont used from then on
+     */
+    private static Font defaultFont = null;
 
     /**
-     * constructor for the Level 
+     * constructor for the Level
      */
     public ILevel() {
         current = this;
         timer = new javax.swing.Timer(15, this);
     }
- /**
+
+    /**
      *
      * @return the timescale of all ILevels
      */
@@ -162,14 +174,12 @@ public abstract class ILevel extends JPanel implements ActionListener {
         ILevel.timeScale = timeScale;
     }
 
-
-
     /**
-     * 
+     *
      * @return gets the scaled delta if the level
      */
     public static float getDelta() {
-        return Game.getDelta()*(float)timeScale;
+        return Game.getDelta() * (float) timeScale;
     }
 
     /**
@@ -214,7 +224,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
 
     /**
      *
-     * @param FPS sets the fps of the level also does this dynamicly 
+     * @param FPS sets the fps of the level also does this dynamicly
      */
     public static void setFPS(int FPS) {
         ILevel.FPS = FPS;
@@ -223,7 +233,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
     }
 
     /**
-     * @return whether or not to stop audio on load 
+     * @return whether or not to stop audio on load
      * @see Game#SetLevelActive
      */
     public boolean StopAudioOnStart() {
@@ -232,14 +242,13 @@ public abstract class ILevel extends JPanel implements ActionListener {
 
     /**
      *
-     * @param StopAudioOnStart the object StopAudioOnStart to this 
-     * note should be set in the contructor 
+     * @param StopAudioOnStart the object StopAudioOnStart to this note should
+     * be set in the contructor
      */
     public void setStopAudioOnStart(boolean StopAudioOnStart) {
         this.StopAudioOnStart = StopAudioOnStart;
     }
 
-   
     /**
      *
      * @return total time elapsed in the level
@@ -247,6 +256,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
     public double getTime() {
         return Time;
     }
+
     /**
      *
      * @return the last key pressed by the user
@@ -264,12 +274,11 @@ public abstract class ILevel extends JPanel implements ActionListener {
     }
 
     /**
-     * reset values once level is closed
-     * mainly used for static things or just things 
-     * I want to help dereference and the get collected by
-     * the GC(garbage collector)
+     * reset values once level is closed mainly used for static things or just
+     * things I want to help dereference and the get collected by the GC(garbage
+     * collector)
      */
-    void resetParams() {
+    private void resetParams() {
         IsDragging = false;
         IsInside = true;
         IsClicking = false;
@@ -281,7 +290,8 @@ public abstract class ILevel extends JPanel implements ActionListener {
 
     /**
      *
-     * @return current mouse position on the screen relative to the Top Left of the screen
+     * @return current mouse position on the screen relative to the Top Left of
+     * the screen
      */
     public Vector getMousePos() {
         return MousePos;
@@ -311,10 +321,9 @@ public abstract class ILevel extends JPanel implements ActionListener {
         return IsClicking;
     }
 
-    /** 
-     * 1 left
-     * 2 middle
-     * 3 right
+    /**
+     * 1 left 2 middle 3 right
+     *
      * @param ind
      * @return the value of the mosue click
      */
@@ -328,8 +337,8 @@ public abstract class ILevel extends JPanel implements ActionListener {
     }
 
     /**
-     * just gets the this for an Ilevel
-     * useful to getting in the embeded class TAdapter
+     * just gets the this for an Ilevel useful to getting in the embeded class
+     * TAdapter
      */
     private ILevel get() {
         return this;
@@ -346,6 +355,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
         } catch (IOException ex) {
             Logger.getLogger(ILevel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
+            System.err.println(URL);
             Logger.getLogger(ILevel.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -353,7 +363,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
 
     /**
      *
-     * @param APIURL the api url of the 
+     * @param APIURL the api url of the
      * @return the image it found else null if non found
      * @see ILevel#getOnlineImage
      */
@@ -387,6 +397,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
         setDoubleBuffered(true);
         setVisible(true);
         init();
+
     }
 
     /**
@@ -396,19 +407,19 @@ public abstract class ILevel extends JPanel implements ActionListener {
      * @return the obejct that was added
      */
     public synchronized <T extends IDrawable> T AddObject(T Drawable) {
-        try{
+        try {
             gameObjs.add(Drawable);
             //how the init in the object is ran
             Drawable.CoreInit();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return Drawable;
     }
 
     /**
-     * this is the update loop
-     * does things like sets the delta and collision and updating the objects stored 
+     * this is the update loop does things like sets the delta and collision and
+     * updating the objects stored
      */
     @Override
     public void actionPerformed(ActionEvent ae) {
@@ -421,8 +432,8 @@ public abstract class ILevel extends JPanel implements ActionListener {
     }
 
     /**
-     * runns all the IDrawable doMove function
-     * enables them to use the updateloop
+     * runns all the IDrawable doMove function enables them to use the
+     * updateloop
      */
     public void movement() {
         if (gameObjs.size() == 0) {
@@ -437,10 +448,9 @@ public abstract class ILevel extends JPanel implements ActionListener {
         }
     }
 
-
     /**
      * graphical update loop
-     * 
+     *
      */
     public void paintComponent(Graphics g) {
         // inherited component super
@@ -453,8 +463,12 @@ public abstract class ILevel extends JPanel implements ActionListener {
             g.drawImage(background, 0, 0, (int) (Game.getWindowWidth()), (int) (Game.getWindowHeight()), null);
         }
         //sets the default font of the level
-        Font title = new Font("Comic sans serif ms", 0, (int) (Game.ButtonDims().getY() * 30f));
+        Font title = new Font("Comic sans serif ms", 0, (int) (Game.ButtonDims().getY() * 50f));
         g2d.setFont(title);
+        if (defaultFont != null) {
+            defaultFont = defaultFont.deriveFont(title.getSize2D());
+            g2d.setFont(defaultFont);
+        }
         //ILevel draw
         Draw(g2d);
         try {
@@ -483,7 +497,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
      * @return the object at that address or null if past the array
      */
     public IDrawable GetObject(int index) {
-        if (gameObjs.size() < index) {
+        if (gameObjs.size() > index) {
             return gameObjs.get(index);
         } else {
             UtilManager.FindUseClass(3);
@@ -493,7 +507,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
 
     /**
      *
-     * @return the amount of objects in the game 
+     * @return the amount of objects in the game
      */
     public int GetObjectCount() {
         return gameObjs.size();
@@ -501,7 +515,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
 
     /**
      *
-     * @param g the object to remove 
+     * @param g the object to remove
      */
     public void RemoveObject(IDrawable object) {
         gameObjs.remove(object);
@@ -532,11 +546,10 @@ public abstract class ILevel extends JPanel implements ActionListener {
         } else {
             System.err.println("com.FuturePixels.Utils.ILevel.start() their was a problem disposing of the MouseMotionListeners");
         }
-
     }
 
     /**
-     * stops obejct and remove delegates
+     * stops object and remove delegates
      */
     public void stop() {
         if (Inputadapter == null) {
@@ -562,7 +575,8 @@ public abstract class ILevel extends JPanel implements ActionListener {
 
     /**
      *
-     * @param soundResource the URI of the sound resourse oftern starting with a /
+     * @param soundResource the URI of the sound resourse oftern starting with a
+     * /
      */
     public void play(String soundResource) {
         play(soundResource, 0, 0, false);
@@ -570,7 +584,8 @@ public abstract class ILevel extends JPanel implements ActionListener {
 
     /**
      *
-     * @param soundResource the URI of the sound resourse oftern starting with a /
+     * @param soundResource the URI of the sound resourse oftern starting with a
+     * /
      * @param seconds how far in should it start
      */
     public void play(String soundResource, float seconds) {
@@ -579,17 +594,19 @@ public abstract class ILevel extends JPanel implements ActionListener {
 
     /**
      *
-     * @param soundResource the URI of the sound resourse oftern starting with a /
+     * @param soundResource the URI of the sound resourse oftern starting with a
+     * /
      * @param seconds how far in should it start
-     * @param LoopAmt the amount of times to loop Clip.LOOP_CONTINUOUSLY or -1 for neverstoping
+     * @param LoopAmt the amount of times to loop Clip.LOOP_CONTINUOUSLY or -1
+     * for neverstoping
      */
     public void play(String soundResource, float seconds, int LoopAmt) {
-        
+
         play(soundResource, seconds, LoopAmt, false);
     }
 
     /**
-     * embeded function so no more than 1 audio thread is made at a time 
+     * embeded function so no more than 1 audio thread is made at a time
      */
     private synchronized void play(String soundResource, float seconds, int LoopAmt, boolean a) {
         MusicUtils.play(soundResource, seconds, LoopAmt);
@@ -654,7 +671,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
 
     /**
      *
-     * @return whether or not it uses simple collisions 
+     * @return whether or not it uses simple collisions
      */
     public boolean isSimpleCollison() {
         return SimpleCollison;
@@ -662,16 +679,31 @@ public abstract class ILevel extends JPanel implements ActionListener {
 
     /**
      *
-     * @param SimpleCollison the local variable to use or not use simple collisons
-     * not should be set in the contructor
+     * @param SimpleCollison the local variable to use or not use simple
+     * collisons not should be set in the contructor
      */
     public void setSimpleCollison(boolean SimpleCollison) {
         this.SimpleCollison = SimpleCollison;
     }
 
+    /**
+     *
+     * @return the current font for the level
+     */
+    public static Font getDefaultFont() {
+        return defaultFont;
+    }
+
+    /**
+     *
+     * @param defaultFont will set the main font for the level
+     */
+    public static void setDefaultFont(Font defaultFont) {
+        ILevel.defaultFont = defaultFont;
+    }
+
     //wrapped class for use in detecting user interactions
     class TAdapter extends InputAdapter {
-
 
         /**
          * key release this triggers
@@ -684,6 +716,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
             }
             keyRelease(e);
         }
+
         /**
          * key pressed this triggers
          */
@@ -721,16 +754,16 @@ public abstract class ILevel extends JPanel implements ActionListener {
             //sets full screen
             if (e.getKeyCode() == 10 && e.isAltDown()) {
                 Game.FullScreen();
-            } else 
-            // toggle OS mouse
+            } else // toggle OS mouse
             if (e.getKeyCode() == 10) {
-               Game.toggleCursor();
+                Game.toggleCursor();
             }
             //set last key press
             LastKeyPress = e;
             //keypressed abstract function
             keyPress(e);
         }
+
         /**
          * mouse pressed this triggers
          */
@@ -741,6 +774,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
             //adds reference to the button that is pressed
             MouseButtonPressed.put(e.getButton(), true);
         }
+
         /**
          * mouse release this triggers
          */
@@ -763,13 +797,14 @@ public abstract class ILevel extends JPanel implements ActionListener {
                 //NOT gate toggle with an OR to see if triggered before
                 isactiveOne = isactiveOne != MouseButtonPressed.get(a) || isactiveOne;
                 //dont need to continue if found
-                if(isactiveOne){
+                if (isactiveOne) {
                     break;
                 }
             }
             //if their is a key pressed then true else false
             IsClicking = isactiveOne;
         }
+
         /**
          * mouse is just moved on the screen this triggers
          */
@@ -779,6 +814,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
 //            start();
             IsInside = true;
         }
+
         /**
          * mouse isnt on the screen this triggers
          */
@@ -790,7 +826,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
         }
 
         /**
-         * mouse is clicking and moving this is triggered 
+         * mouse is clicking and moving this is triggered
          */
         @Override
         public void mouseDragged(MouseEvent e) {
@@ -798,6 +834,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
             IsClicking = false;
             MousePos = new Vector(e.getX(), e.getY());
         }
+
         /**
          * mouse is moved on the screen this triggers
          */
@@ -805,8 +842,9 @@ public abstract class ILevel extends JPanel implements ActionListener {
         public void mouseMoved(MouseEvent e) {
             MousePos = new Vector(e.getX(), e.getY());
         }
+
         /**
-         * key is pressed or held this triggers
+         * when key is pressed or held this triggers
          */
         @Override
         public void keyTyped(KeyEvent e) {
@@ -816,7 +854,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
     }
 
     /**
-     * removes as meny references
+     * removes as many references
      */
     public void dispose() {
         stop();
@@ -834,13 +872,14 @@ public abstract class ILevel extends JPanel implements ActionListener {
     }
 
     /**
-     * abstract fucntion runs once when the level is set as the current 
-     * used for populating the gameObjs array
+     * abstract function runs once when the level is set as the current used for
+     * populating the gameObjs array
      */
     public abstract void init();
 
     /**
      * this happens every frame
+     *
      * @param ae an event that the timer passes
      */
     public abstract void Update(ActionEvent ae);
@@ -853,22 +892,24 @@ public abstract class ILevel extends JPanel implements ActionListener {
 
     /**
      * this runns when a keys pressed and this is in focus
+     *
      * @param e key that was pressed
      */
     public abstract void keyPress(KeyEvent e);
 
     /**
      * this runns when a keys released and this is in focus
+     *
      * @param e key that is released
      */
     public abstract void keyRelease(KeyEvent e);
 
     /**
      * this runns when a keys pressed and/or held and this is in focus
-     * @param e key that is pressed
-     * should be overwritten to used using "@Override" modifier
+     *
+     * @param e key that is pressed should be overwritten to used using
+     * "@Override" modifier
      */
     public void keytyped(KeyEvent e) {
-        System.out.println("com.Liamengine.Engine.AbstractClasses.ILevel.keytyped()");
     }
 }

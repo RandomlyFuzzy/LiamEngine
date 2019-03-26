@@ -38,7 +38,7 @@ public class CollisonUtils {
         double u = (((c.getX() - a.getX()) * r.getY()) - ((c.getY() - a.getY()) * r.getX())) / g;
         double t = (((c.getX() - a.getX()) * s.getY()) - ((c.getY() - a.getY()) * s.getX())) / g;
 
-        //check if within bothe bounds 
+        //check if within both the bounds 
         if (0 <= u && u <= 1 && t >= 0 && t <= 1) {
 
             //scale the in vector by whe bounds and add the a offset so it start at the begining

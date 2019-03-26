@@ -584,7 +584,8 @@ public abstract class IDrawable {
     }
 
     /**
-     * this is what happens when the object is added to level
+     * this is what happens when the object is added to level and shouldn't be access by anything other than the Level
+     * that is why its package private
      *
      * @see ILevel#AddObject
      */
@@ -600,7 +601,8 @@ public abstract class IDrawable {
     }
 
     /**
-     * this is the core update to the object this is run every frame
+     * this is the core update to the object this is run every frame and should not be accessed by anything other than the level
+     * so it is package private
      */
     void CoreUpdate(Graphics2D g) {
         //check to see if enabled 
@@ -640,12 +642,12 @@ public abstract class IDrawable {
                 (int) ((Transform.getOffsetTranslation().getX() + (int) getPosition().getX()) * Game.WorldScale().getX()),
                 (int) ((Transform.getOffsetTranslation().getY() + (int) getPosition().getY()) * Game.WorldScale().getY()),
                 (int) ((Transform.getOffsetTranslation().getX() + (int) (getPosition().getX() + (GetUp().getX()) * 20)) * Game.WorldScale().getX()),
-                (int) ((Transform.getOffsetTranslation().getY() + (int) (getPosition().getY() + (GetUp().getY()) * 20)) * Game.WorldScale().getX()));
+                (int) ((Transform.getOffsetTranslation().getY() + (int) (getPosition().getY() + (GetUp().getY()) * 20)) * Game.WorldScale().getY()));
         g2d.drawLine(
                 (int) ((Transform.getOffsetTranslation().getX() + (int) getPosition().getX()) * Game.WorldScale().getX()),
                 (int) ((Transform.getOffsetTranslation().getY() + (int) getPosition().getY()) * Game.WorldScale().getY()),
                 (int) ((Transform.getOffsetTranslation().getX() + (int) (getPosition().getX() + (GetRight().getX()) * 20)) * Game.WorldScale().getX()),
-                (int) ((Transform.getOffsetTranslation().getY() + (int) (getPosition().getY() + (GetRight().getY()) * 20)) * Game.WorldScale().getX()));
+                (int) ((Transform.getOffsetTranslation().getY() + (int) (getPosition().getY() + (GetRight().getY()) * 20)) * Game.WorldScale().getY()));
 
         Vector[] _left = sideLeft();
         Vector[] _right = sideRight();
@@ -710,8 +712,8 @@ public abstract class IDrawable {
                 System.err.println("error Drawing last image as their was not last image in " + e.getStackTrace()[1] + " try pre loading it in init() to get rid of this warning");
             }
         } else {
-            setSpriteWidth(she.GetSegWidth());
-            setSpriteHeight(she.GetSegHeight());
+//            setSpriteWidth(she.GetSegWidth());
+//            setSpriteHeight(she.GetSegHeight());
             she.DrawFromGraphic(g, LastImage, (int) Toffset.getX() + (int) -(getSpriteWidth()) / 2, (int) Toffset.getY() + (int) -(getSpriteHeight()) / 2, (int) (getSpriteWidth()) / 2, (int) (getSpriteHeight()) / 2);
 
         }
