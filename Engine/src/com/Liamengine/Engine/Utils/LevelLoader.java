@@ -73,7 +73,7 @@ public class LevelLoader {
         for (ILevel i : LL.LEVELS) {
             if (i.getClass().getName().contains(level)) {
                 try {
-                    System.out.println("com.FuturePixels.MainClasses.LevelLoader.<init>() " + i.getClass().getName().toString());
+                    System.out.println("Loaded level " + i.getClass().getName().toString());
                     Game.SetLevelActive(i.getClass().newInstance());
                     found = true;
                 } catch (IllegalAccessException ex) {

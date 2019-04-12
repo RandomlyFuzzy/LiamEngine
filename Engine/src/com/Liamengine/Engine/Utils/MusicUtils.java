@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.AudioFormat;
@@ -35,8 +36,15 @@ public class MusicUtils {
      * all music threads currenly running
      */
     private static ArrayList<MusicThread> sounds = new ArrayList<MusicThread>();
+
     /**
-     * defualt volume
+     * this contains every path of sounds that caused an error to be stopped
+     * from running when started
+     */
+    private static ArrayList<String> errorMap = new ArrayList<>();
+
+    /**
+     * default volume
      *
      * @see Musicutil#SetVolume
      * @see MusicThread#setVolume
@@ -70,6 +78,10 @@ public class MusicUtils {
      * @see #MusicThread
      */
     public synchronized static void play(String soundResource, float time, int LoopAmt) {
+
+        if (errorMap.contains(soundResource)) {
+            return;
+        }
         //local variable to check if currently running (stops spam)
         boolean isPlaying = false;
         //if sounds are playing
@@ -94,11 +106,12 @@ public class MusicUtils {
         }
         //if not found or the collection is empty
         if (!isPlaying) {
+
             try {
                 //create new audio using sound resouce
                 MusicThread d = new MusicThread(soundResource);
                 //set to the default value
-                d.setVolume(val);
+                d.setAudioval(val);
                 //go to this place in the audio clip
                 d.Search(time);
                 //set whether or not it should loop and how much
@@ -109,6 +122,7 @@ public class MusicUtils {
                 sounds.add(d);
             } catch (Exception ex) {
                 System.err.println("their was an error running " + soundResource);
+                errorMap.add(soundResource);
             }
         }
     }
@@ -163,7 +177,7 @@ public class MusicUtils {
             return;
         }
         sounds.forEach((A) -> {
-            A.setVolume(Val);
+            A.setAudioval(Val);
         });
         val = Val;
     }
@@ -210,33 +224,26 @@ public class MusicUtils {
         private Thread t = null;
 
         /**
+         * current audio value
+         */
+        private float audioval = 1;
+
+        /**
          * @param Source the local uri of the audio file
          */
-        public MusicThread(String Source) {
+        public MusicThread(String Source) throws Exception {
             super();
-            try {
-                this.Path = Source;
-                clip = AudioSystem.getClip();
-                //this extra stream is needed for ioexception mark/reset that accurres 
-                FileInputStream is = new FileInputStream(new File("resources"+Source));
-                BufferedInputStream myStream = new BufferedInputStream(is); 
-                this.ais = AudioSystem.getAudioInputStream(myStream);
-                clip.open(ais);
-            } catch (LineUnavailableException ex) {
-                Logger.getLogger(MusicUtils.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(MusicUtils.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (UnsupportedAudioFileException ex) {
-                Logger.getLogger(MusicUtils.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (Exception ex) {
-                System.err.println(Source);
-                Logger.getLogger(MusicUtils.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
+            this.Path = Source;
+            clip = AudioSystem.getClip();
+            //this extra stream is needed for ioexception mark/reset that accurres 
+            FileInputStream is = new FileInputStream(new File(System.getProperty("user.dir") + "/resources" + Source));
+            BufferedInputStream myStream = new BufferedInputStream(is);
+            this.ais = AudioSystem.getAudioInputStream(myStream);
+            clip.open(ais);
         }
 
         /**
-         * @return returns the local definishion of finished
+         * @return returns the local definition of finished
          */
         public boolean isFinished() {
             if (isLooping && finished) {
@@ -254,7 +261,7 @@ public class MusicUtils {
         }
 
         /**
-         * @param time set the current postition in the audio clip in seconds
+         * @param time set the current position in the audio clip in seconds
          */
         public void Search(float time) {
             if (time == 0) {
@@ -278,23 +285,23 @@ public class MusicUtils {
             //creates a new thread
             t = new Thread(() -> {
                 try {
-                        //starts the audio
-                        clip.start();
-                        //waits the file duration (should be the file length - start place) in milliseconds
-                        Thread.sleep((int) ((ais.getFrameLength() / clip.getFormat().getFrameRate()) * 1000f));
-                        //if is not looping
-                        if (!isLooping) {
-                            //stop the music and define it as finsihed
-                            finished = true;
-                            Stop();
-                        }
-                        //stop the thread 
+                    //starts the audio
+                    clip.start();
+                    //waits the file duration (should be the file length - start place) in milliseconds
+                    Thread.sleep((int) ((ais.getFrameLength() / clip.getFormat().getFrameRate()) * 1000f));
+                    //if is not looping
+                    if (!isLooping) {
+                        //stop the music and define it as finsihed
+                        finished = true;
+                        Stop();
+                    }
+                    //stop the thread 
 
                     t.stop();
                 } catch (InterruptedException ex) {
                     Logger.getLogger(MusicUtils.class.getName()).log(Level.SEVERE, null, ex);
-                }catch(Exception ex){
-                    System.err.println("their was an error running "+Path);
+                } catch (Exception ex) {
+                    System.err.println("their was an error running " + Path);
                 }
             });
             //starts thread
@@ -307,9 +314,13 @@ public class MusicUtils {
         public void Stop() {
             try {
                 stoped = true;
-                clip.stop();
-                clip.flush();
-                ais.close();
+                if (clip != null) {
+                    clip.stop();
+                    clip.flush();
+                }
+                if (ais != null) {
+                    ais.close();
+                }
             } catch (IOException ex) {
                 Logger.getLogger(MusicUtils.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -328,22 +339,37 @@ public class MusicUtils {
         /**
          * @param val the volume of the audio
          */
-        public void setVolume(float val) {
+        private void setVolume(float val) {
             //controls the audio volume
             FloatControl fc = null;
             //aparently there are multiple audio middleware and they use different things that why this is here
             if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
                 fc = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+
+                float p1 = Map(val, 0f, 1f, 0.000001f, fc.getMaximum());
+                float p0 = fc.getMaximum();
+                float db = p1;
+                db = (float) (Math.log10(p1 / p0) * 10);
+
+                fc.setValue(db);
             } else if (clip.isControlSupported(FloatControl.Type.VOLUME)) {
                 fc = (FloatControl) clip.getControl(FloatControl.Type.VOLUME);
+                fc.setValue(Map(val, 0f, 1f, 0.5f + fc.getMinimum(), fc.getMaximum() - 0.1f));
             } else {
                 System.err.println("their is no volume control supported shutting down Audio");
                 return;
             }
-            //maps the current volume from 0 ... 1 to minval ... max value
-            // dont know the decibels gain so just did this generic implementation
-            fc.setValue(Map(val, 0f, 1f, 0.5f + fc.getMinimum(), fc.getMaximum() - 0.1f));
-            //System.out.println("" + fc.getValue());
+            audioval = val;
+//
+        }
+
+        public void setAudioval(float audioval) {
+            this.audioval = audioval;
+            setVolume(audioval);
+        }
+
+        public float getAudioval() {
+            return audioval;
         }
 
         /**
@@ -365,7 +391,9 @@ public class MusicUtils {
                     + C;
         }
 
-        //get the currently loaded file path
+        /**
+         * get the currently loaded file path
+         */
         public String getPath() {
             return Path;
         }

@@ -13,13 +13,12 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
 /**
- * this is used for simple file operation like read write 
- * and append to make life easier
- * 
- * 
+ * this is used for simple file operation like read write and append to make
+ * life easier
+ *
+ *
  * @author Liam Woolley 1748910
  */
 public class FileUtils {
@@ -27,13 +26,13 @@ public class FileUtils {
     /**
      *
      * @param URI local file address
-     * @return the contence of a file if exsist else just and empty string 
+     * @return the contence of a file if exist else just and empty string
      */
     public static String GetFileContence(String URI) {
         String str = "";
         FileReader fis = null;
         try {
-            File file = new File(URI);
+            File file = new File(System.getProperty("user.dir")+"/"+URI);
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -59,9 +58,9 @@ public class FileUtils {
      *
      * @param URI local file address
      * @param Data the data to set the contence to
-     */ 
+     */
     public static void SetFileContence(String URI, String Data) {
-        File file = new File(URI);
+        File file = new File(System.getProperty("user.dir")+"/"+URI);
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -71,7 +70,7 @@ public class FileUtils {
         }
         PrintStream FileStream = null;
         try {
-            FileStream = new PrintStream(new File(URI));
+            FileStream = new PrintStream(new File(System.getProperty("user.dir")+"/"+URI));
             FileStream.print(Data);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, null, ex);
@@ -97,11 +96,13 @@ public class FileUtils {
      * @return
      */
     public static String[] GetFileSplit(String URI, String regex) {
-        File file = new File(URI);
+        System.out.println(System.getProperty("user.dir")+"/"+URI);
+        File file = new File(System.getProperty("user.dir")+"/"+URI);
         if (!file.exists()) {
             try {
                 file.createNewFile();
             } catch (IOException ex) {
+                System.err.println(URI);
                 Logger.getLogger(FileUtils.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -114,7 +115,8 @@ public class FileUtils {
      *
      * @param URI
      * @param regex a regular expression to split when mached
-     * @param AsCollection arbitary vaiable just because of java method signitures 
+     * @param AsCollection arbitary vaiable just because of java method
+     * signitures
      * @return
      */
     public static ArrayList<String> GetFileSplit(String URI, String regex, Object AsCollection) {
@@ -123,6 +125,7 @@ public class FileUtils {
         for (String s : contence) {
             ret.add(s);
         }
+        contence = null;
         return ret;
     }
 }

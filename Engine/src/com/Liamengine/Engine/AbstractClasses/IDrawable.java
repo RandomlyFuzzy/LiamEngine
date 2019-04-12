@@ -228,8 +228,8 @@ public abstract class IDrawable {
 
     /**
      *
-     * @return the variable IsCollidable 
-     * 
+     * @return the variable IsCollidable
+     *
      */
     public boolean IsCollidable() {
         return isCollidable;
@@ -279,6 +279,7 @@ public abstract class IDrawable {
     public Vector getScale() {
         return Scale;
     }
+
     /**
      *
      * @param Rotation sets object Rotation to that value
@@ -326,8 +327,8 @@ public abstract class IDrawable {
     }
 
     /**
-     * wrapping function to get the current Level from game used a lot so this is
-     * easier
+     * wrapping function to get the current Level from game used a lot so this
+     * is easier
      *
      * @return the Current Level
      */
@@ -390,10 +391,10 @@ public abstract class IDrawable {
                 a2 = (float) Math.atan2(-sh / 2, sw / 2),
                 a3 = (float) Math.atan2(-sh / 2, -sw / 2),
                 a4 = (float) Math.atan2(sh / 2, -sw / 2);
-        vert1 = new Vector((int) (pos.getX() + Toffset.getX() + (float) Math.cos(a1 - tr) * hy), (int) (pos.getY() + Toffset.getY() + (float) -Math.sin(a1 - tr) * hy));
-        vert2 = new Vector((int) (pos.getX() + Toffset.getX() + (float) Math.cos(a2 - tr) * hy), (int) (pos.getY() + Toffset.getY() + (float) -Math.sin(a2 - tr) * hy));
-        vert3 = new Vector((int) (pos.getX() + Toffset.getX() + (float) Math.cos(a3 - tr) * hy), (int) (pos.getY() + Toffset.getY() + (float) -Math.sin(a3 - tr) * hy));
-        vert4 = new Vector((int) (pos.getX() + Toffset.getX() + (float) Math.cos(a4 - tr) * hy), (int) (pos.getY() + Toffset.getY() + (float) -Math.sin(a4 - tr) * hy));
+        vert1 = new Vector((int) (pos.getX() + (float) Math.cos(a1 - tr) * hy), (int) (pos.getY() + (float) -Math.sin(a1 - tr) * hy));
+        vert2 = new Vector((int) (pos.getX() + (float) Math.cos(a2 - tr) * hy), (int) (pos.getY() + (float) -Math.sin(a2 - tr) * hy));
+        vert3 = new Vector((int) (pos.getX() + (float) Math.cos(a3 - tr) * hy), (int) (pos.getY() + (float) -Math.sin(a3 - tr) * hy));
+        vert4 = new Vector((int) (pos.getX() + (float) Math.cos(a4 - tr) * hy), (int) (pos.getY() + (float) -Math.sin(a4 - tr) * hy));
     }
 
     /**
@@ -439,10 +440,7 @@ public abstract class IDrawable {
      */
     public boolean CheckCollions(IDrawable t) {
         if (checkForIntersections(t.getBounds())) {
-//            System.out.println("com.FuturePixels.Utils.IDrawable.CheckCollions()");
-            if (t.isEnabled() == true) {
-            //#################################################update and remove this :/######################################################################
-                onCollison(t);
+            if (t.isEnabled()) {
                 return true;
             }
         }
@@ -493,10 +491,17 @@ public abstract class IDrawable {
      */
     public IDrawable GetSprite(String URI) {
         if (!LastimageAddress.equals(URI)) {
-            LastImage = GetImage(URI);
-            this.spriteWidth = LastImage.getWidth();
-            this.spriteHeight = LastImage.getHeight();
-            UpdateBounds();
+            try {
+                LastImage = GetImage(URI);
+                if (LastImage != null) {
+                    this.spriteWidth = LastImage.getWidth();
+                    this.spriteHeight = LastImage.getHeight();
+                    UpdateBounds();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println(" file from address " + URI + " does not exsist");
+            }
             LastimageAddress = URI;
         }
         return this;
@@ -584,8 +589,8 @@ public abstract class IDrawable {
     }
 
     /**
-     * this is what happens when the object is added to level and shouldn't be access by anything other than the Level
-     * that is why its package private
+     * this is what happens when the object is added to level and shouldn't be
+     * access by anything other than the Level that is why its package private
      *
      * @see ILevel#AddObject
      */
@@ -601,8 +606,8 @@ public abstract class IDrawable {
     }
 
     /**
-     * this is the core update to the object this is run every frame and should not be accessed by anything other than the level
-     * so it is package private
+     * this is the core update to the object this is run every frame and should
+     * not be accessed by anything other than the level so it is package private
      */
     void CoreUpdate(Graphics2D g) {
         //check to see if enabled 
@@ -611,8 +616,6 @@ public abstract class IDrawable {
             return;
         }
 
-        //this shouldnt be here but if it is the game runs fine
-        doMove();
         //pushing a transformation
         if (canUseTransforms()) {
             transform.PushTransforms(g);
@@ -620,9 +623,17 @@ public abstract class IDrawable {
         //this an abtract function call
         //graphical drawing
         Update(g);
-        for (int i = Components.size() - 1; i > 0; i--) {
+        for (int i = Components.size() - 1; i >= 0; i--) {
             Components.get(i).Update(g);
         }
+        if (Components.size() != 0) {
+            for (int i = 0; i < Components.size(); i++) {
+                if (Components.get(i) != null) {
+                    Components.get(i).Update(g);
+                }
+            }
+        }
+
         //runs the object(is still a Component)
         transform.Update(g);
         //resets the variable
@@ -694,7 +705,15 @@ public abstract class IDrawable {
                 System.err.println("error Drawing last image as their was not last image in " + e.getStackTrace()[1] + " try pre loading it in init() to get rid of this warning");
             }
         } else {
+            if (useTransforms) {
                 g.drawImage(LastImage, (int) Toffset.getX() + (int) -(getSpriteWidth()) / 2, (int) Toffset.getY() + (int) -(getSpriteHeight()) / 2, (int) (getSpriteWidth()), (int) (getSpriteHeight()), null);
+            } else {
+                g.drawImage(LastImage,
+                        (int) (position.getX() + Toffset.getX() + (int) -(getSpriteWidth()) / 2f),
+                        (int) (position.getY() + Toffset.getY() + (int) -(getSpriteHeight()) / 2f),
+                        (int) (getSpriteWidth()), (int) (getSpriteHeight()), null);
+
+            }
         }
     }
 

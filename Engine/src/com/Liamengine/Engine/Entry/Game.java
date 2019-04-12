@@ -94,7 +94,7 @@ public class Game {
     /**
      * dimentions of the buttons prefered
      */
-    private static Vector buttondims = new Vector(0.8f, 0.79f);
+    private static Vector buttondims = new Vector(0.76f, 0.75f);
     /**
      * the world scaler
      */
@@ -247,6 +247,7 @@ public class Game {
             CurrentLevel.dispose();
             //Jpanel remove just incase
             CurrentLevel.removeAll();
+            gameWindow.remove(CurrentLevel);
             //disables the focus on that level
             CurrentLevel.setFocusable(false);
             //stops it from being showm
@@ -309,8 +310,8 @@ public class Game {
      *
      */
     public static void CalculateDims() {
-        float hypot = (float) Math.sqrt((Game.GetFrame().getWidth() * Game.GetFrame().getWidth()) + (Game.GetFrame().getHeight() * Game.GetFrame().getHeight()));
-        worldDims = new Vector((Game.GetFrame().getWidth() / hypot) * Game.GetFrame().getWidth() / 1280, (Game.GetFrame().getWidth() / hypot) * Game.GetFrame().getWidth() / 1280);
+        float hypot = (float) Math.sqrt((Game.GetFrame().getWidth() * Game.GetFrame().getWidth()) + ((Game.GetFrame().getHeight()-30) * (Game.GetFrame().getHeight()-30)));
+        worldDims = new Vector(Game.GetFrame().getWidth() / 1280f, Game.GetFrame().getHeight() / (isFullScreen?720f:690f));
     }
 
     /**
@@ -384,7 +385,7 @@ public class Game {
      * @return the unscaled height of the game window
      */
     public static int getWindowHeight() {
-        return (int) ((gameWindow.getHeight()));
+        return (int) ((gameWindow.getHeight()-(isFullScreen?0:30)));
     }
 
     /**

@@ -59,9 +59,10 @@ public class Transform extends IComponent {
 
     /**
      *
+     * this should be only changed once per frame optimally
      * @param offsetTranslation sets the current camera translation
      */
-    public static void setOffsetTranslation(Vector offsetTranslation) {
+    public static synchronized void setOffsetTranslation(Vector offsetTranslation) {
         Transform.offsetTranslation = offsetTranslation;
         offsetTranslation = null;
     }
@@ -88,7 +89,7 @@ public class Transform extends IComponent {
      */
     public void PushTransforms(Graphics2D g) {
         Scale = getParent().getScale();
-        Translation = getParent().getPosition();
+        Translation = getParent().getPosition().add(new Vector(getParent().getPoffset()));
         RotationZ = getParent().getRotation();
         WorldScale = Game.WorldScale();
 

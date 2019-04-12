@@ -150,6 +150,8 @@ public abstract class ILevel extends JPanel implements ActionListener {
      */
     private static Font defaultFont = null;
 
+    private int cnt = 0;
+
     /**
      * constructor for the Level
      */
@@ -358,39 +360,11 @@ public abstract class ILevel extends JPanel implements ActionListener {
             System.err.println(URL);
             Logger.getLogger(ILevel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return GetSprite("/images/defualt.png");
     }
 
     /**
-     *
-     * @param APIURL the api url of the
-     * @return the image it found else null if non found
-     * @see ILevel#getOnlineImage
-     */
-    public BufferedImage getFromApi(String APIURL) {
-        BufferedReader in = null;
-        String Data = "";
-        try {
-            in = new BufferedReader(new InputStreamReader(new URL(APIURL).openStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                Data += (line);
-            }
-            in.close();
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(ILevel.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(ILevel.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-        }
-        Data = Data.substring(Data.indexOf("data\",\"") + 10, Data.length() - 2);
-        Data = Data.replace("\\/", "/");
-        System.out.println(Data);
-        return getOnlineImage(Data);
-    }
-
-    /**
-     * what happenes when the level is loaded
+     * what happens when the level is loaded
      */
     public void OnStart() {
         setFocusable(true);
@@ -427,13 +401,14 @@ public abstract class ILevel extends JPanel implements ActionListener {
         movement();
         checkCollionsions();
         this.repaint();
+        cnt++;
         Time += ILevel.getDelta();
         Game.SetDelta();
     }
 
     /**
-     * runns all the IDrawable doMove function enables them to use the
-     * updateloop
+     * runs all the IDrawable doMove function enables them to use the
+     * update loop
      */
     public void movement() {
         if (gameObjs.size() == 0) {
@@ -484,9 +459,12 @@ public abstract class ILevel extends JPanel implements ActionListener {
             // theirs always an error here cant figure out how to resolve :/
 //            System.err.println(e);
         }
+        
+        PostDraw(g2d);
+        
         //shows FPS
         if (DebugCollisons) {
-            g2d.drawString("" + 1f / Game.getDelta() + "fps", 20, 20);
+            g2d.drawString(String.format("%.2f fps",1f/(getDelta())), 20, g2d.getFont().getSize() / 2 + 20);
         }
         hasClicked = false;
     }
@@ -528,7 +506,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
         if (Inputadapter == null) {
             Inputadapter = new TAdapter();
         }
-        current.timer = new javax.swing.Timer((int) ((float) 1000 / (float) FPS), this);
+        current.timer = new javax.swing.Timer((int) ((float) (1000f / FPS)), this);
         timer.start();
 
         if (getKeyListeners().length == 0) {
@@ -700,6 +678,7 @@ public abstract class ILevel extends JPanel implements ActionListener {
      */
     public static void setDefaultFont(Font defaultFont) {
         ILevel.defaultFont = defaultFont;
+
     }
 
     //wrapped class for use in detecting user interactions
@@ -889,6 +868,15 @@ public abstract class ILevel extends JPanel implements ActionListener {
      * @param g graphical context
      */
     public abstract void Draw(Graphics2D g);
+    
+    /**
+     * this happens after every object has bee drawn
+     * @param g graphical context
+     */
+    public void PostDraw(Graphics2D g){}
+    
+    
+    
 
     /**
      * this runns when a keys pressed and this is in focus
