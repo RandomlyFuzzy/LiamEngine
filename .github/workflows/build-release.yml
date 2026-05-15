@@ -67,7 +67,7 @@ jobs:
         with:
           tag: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
-          artifact: LiamEngine-jar
+          artifacts: LiamEngine-jar
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
