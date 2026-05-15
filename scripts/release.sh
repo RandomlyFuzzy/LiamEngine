@@ -1,17 +1,33 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/bash
 
-VERSION="$1"
-shift || true
+set -e
 
-echo "Tagging $VERSION"
+# Get latest tag (fallback to v0.0.0 if none exist)
+LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
 
-if git rev-parse --verify "$VERSION" >/dev/null 2>&1; then
-  git tag -d "$VERSION"
-  git push --delete origin "$VERSION" || true
-fi
+echo "Latest tag: $LATEST_TAG"
 
-git tag -a "$VERSION" -m "Release $VERSION"
-git push origin "$VERSION"
+# Strip "v"
+VERSION=${LATEST_TAG#v}
 
-echo "Done (GitHub Actions will handle build + release)"
+IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+
+# Increment patch version
+PATCH=$((PATCH + 1))
+
+NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+
+echo "New tag: $NEW_TAG"
+
+# Commit any changes (optional safety)
+git add -A
+git commit -m "Release $NEW_TAG" || echo "No changes to commit"
+
+# Create new tag
+git tag "$NEW_TAG"
+
+# Push commit + tag
+git push origin main
+git push origin "$NEW_TAG"
+
+echo "Released $NEW_TAG 🚀"

@@ -1,73 +1,53 @@
-name: Build and Release (Java 1.8.0_201)
+name: Build and Release (Java 8)
 
 on:
   push:
-    branches: [ main ]
-    tags: ['v*.*.*']
-  pull_request:
-    branches: [ main ]
-  
+    tags:
+      - "v*.*.*"
+
 permissions:
   contents: write
-  packages: write
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up JDK 8
         uses: actions/setup-java@v4
         with:
-          java-version: '8.0.492+9'
           distribution: temurin
-          java-package: jdk
-          check-latest: false
-          server-id: github
-          server-username: ${{ github.actor }}
-          server-password: ${{ secrets.GITHUB_TOKEN }}
-          overwrite-settings: true
-          job-status: success
-          token: ${{ secrets.GITHUB_TOKEN }}
+          java-version: "8"
 
       - name: Install Ant
         run: sudo apt-get update && sudo apt-get install -y ant
 
-      - name: Build jar with Ant
+      - name: Build with Ant
         working-directory: Engine
         run: ant jar
 
-      - name: Upload dist artifact
-        uses: actions/upload-artifact@v4
+      - name: Show build output (debug)
+        run: find Engine -type f -name "*.jar" -print
+
+      - name: Get JAR path
+        id: jar
+        run: |
+          file=$(find Engine -type f -name "*.jar" | head -n 1)
+          echo "Found jar: $file"
+          echo "file=$file" >> $GITHUB_OUTPUT
+
+      - name: Fail if JAR not found
+        run: |
+          if [ -z "${{ steps.jar.outputs.file }}" ]; then
+            echo "No JAR found after build!"
+            exit 1
+          fi
+
+      - name: Create GitHub Release and upload JAR
+        uses: softprops/action-gh-release@v2
         with:
-          name: LiamEngine-jar
-          path: Engine/dist/*.jar
-
-  release:
-    needs: build
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: LiamEngine-jar
-          path: Engine/dist
-
-      - name: List downloaded artifacts
-        run: ls -la Engine/dist || true
-
-      - name: Create GitHub Release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
-          artifacts: LiamEngine-jar
-          draft: false
-          prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ github.ref_name }}
+          files: ${{ steps.jar.outputs.file }}
