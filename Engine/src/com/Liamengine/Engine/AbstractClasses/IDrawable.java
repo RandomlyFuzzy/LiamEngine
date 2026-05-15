@@ -382,7 +382,12 @@ public abstract class IDrawable {
      * @see IDrawable#setLastImage
      */
     public synchronized void UpdateBounds() {
-        float sw = getScaledSpriteWidth(), sh = getScaledSpriteHeight();
+        // If transforms are applied to the graphics context, calculations
+        // for bounds should use the raw sprite size because the transform
+        // will scale the rendered image. When transforms are not used,
+        // use the scaled sprite sizes directly.
+        float sw = canUseTransforms() ? getSpriteWidth() : getScaledSpriteWidth();
+        float sh = canUseTransforms() ? getSpriteHeight() : getScaledSpriteHeight();
         double tr = getTotalRotation();
         Vector Sca = new Vector(getScale()).mult(Game.WorldScale()), pos = getPosition();
 
@@ -701,13 +706,22 @@ public abstract class IDrawable {
             }
         } else {
             if (useTransforms) {
-                g.drawImage(LastImage, (int) Toffset.getX() + (int) -(getSpriteWidth()) / 2, (int) Toffset.getY() + (int) -(getSpriteHeight()) / 2, (int) (getSpriteWidth()), (int) (getSpriteHeight()), null);
-            } else {
+                // When transforms are enabled the Graphics2D already applies
+                // translation/rotation/scale. Draw the image with its raw
+                // dimensions (transforms will scale it).
                 g.drawImage(LastImage,
-                        (int) (position.getX() + Toffset.getX() + (int) -(getSpriteWidth()) / 2f),
-                        (int) (position.getY() + Toffset.getY() + (int) -(getSpriteHeight()) / 2f),
-                        (int) (getSpriteWidth()), (int) (getSpriteHeight()), null);
-
+                    (int) Toffset.getX() + (int) -(getSpriteWidth()) / 2,
+                    (int) Toffset.getY() + (int) -(getSpriteHeight()) / 2,
+                    (int) (getSpriteWidth()), (int) (getSpriteHeight()), null);
+            } else {
+                // When transforms are not used we must apply both local scale
+                // and world scale to the drawn image size.
+                int drawW = (int) (getScaledSpriteWidth() * Game.WorldScale().getX());
+                int drawH = (int) (getScaledSpriteHeight() * Game.WorldScale().getY());
+                g.drawImage(LastImage,
+                    (int) (position.getX() + Toffset.getX() + (int) -(drawW) / 2f),
+                    (int) (position.getY() + Toffset.getY() + (int) -(drawH) / 2f),
+                    drawW, drawH, null);
             }
         }
     }
