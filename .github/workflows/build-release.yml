@@ -62,19 +62,12 @@ jobs:
       - name: List downloaded artifacts
         run: ls -la Engine/dist || true
 
-      - name: Copy JAR to workspace root
-        run: |
-          mkdir -p ./.release
-          cp Engine/dist/*.jar ./.release/LiamEngine.jar
-          ls -la ./.release || true
-
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
-          files: ./.release/LiamEngine.jar
+          artifact: LiamEngine-jar
           draft: false
           prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
