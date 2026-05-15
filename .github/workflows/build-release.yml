@@ -6,6 +6,10 @@ on:
     tags: ['v*.*.*']
   pull_request:
     branches: [ main ]
+  
+permissions:
+  contents: write
+  packages: write
 
 jobs:
   build:
@@ -75,6 +79,7 @@ jobs:
           release_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Release Asset for tag
         uses: actions/upload-release-asset@v1
@@ -83,6 +88,7 @@ jobs:
           asset_path: Engine/dist/LiamEngine.jar
           asset_name: LiamEngine.jar
           asset_content_type: application/java-archive
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create or update "latest" release and upload JAR
         uses: ncipollo/release-action@v1
@@ -92,3 +98,4 @@ jobs:
           draft: false
           prerelease: false
           files: Engine/dist/LiamEngine.jar
+          token: ${{ secrets.GITHUB_TOKEN }}
