@@ -45,6 +45,12 @@ jobs:
           distribution: 'temurin'
           java-version: '1.8.0_201'
 
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: LiamEngine-jar
+          path: Engine/dist
+
       - name: Create GitHub Release for tag
         id: create_release
         uses: actions/create-release@v1
@@ -61,12 +67,6 @@ jobs:
           asset_path: Engine/dist/LiamEngine.jar
           asset_name: LiamEngine.jar
           asset_content_type: application/java-archive
-
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: LiamEngine-jar
-          path: Engine/dist
 
       - name: Create or update "latest" release and upload JAR
         uses: ncipollo/release-action@v1
