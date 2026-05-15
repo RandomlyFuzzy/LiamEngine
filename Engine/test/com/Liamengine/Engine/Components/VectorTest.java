@@ -92,11 +92,11 @@ public class VectorTest {
     }
 
     @Test
-    public void normalizedOfZeroVectorReturnsNaN() {
+    public void normalizedOfZeroVectorDefaultsToZero() {
         Vector v = Vector.Zero();
         Vector n = v.Normalized();
-        assertTrue(Float.isNaN(n.getX()));
-        assertTrue(Float.isNaN(n.getY()));
+        assertEquals(0f, n.getX(), DELTA);
+        assertEquals(0f, n.getY(), DELTA);
     }
 
     @Test
@@ -131,15 +131,16 @@ public class VectorTest {
     }
 
     @Test
-    public void isNaNReturnsTrueForNaNVector() {
-        Vector v = new Vector(Float.NaN, Float.NaN);
-        assertTrue(v.isNaN(v));
+    public void isNaNReturnsTrueForNaNValues() {
+        assertTrue(new Vector(0, 0).isNaN(Float.NaN, 1f));
+        assertTrue(new Vector(0, 0).isNaN(1f, Float.NaN));
+        assertFalse(new Vector(0, 0).isNaN(1f, 2f));
     }
 
     @Test
     public void isNaNReturnsFalseForValidVector() {
         Vector v = new Vector(1f, 2f);
-        assertFalse(v.isNaN(v));
+        assertFalse(v.isNaN(new Vector(1f, 2f)));
     }
 
     @Test
