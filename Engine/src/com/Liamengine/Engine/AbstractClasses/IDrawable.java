@@ -623,14 +623,9 @@ public abstract class IDrawable {
         //this an abtract function call
         //graphical drawing
         Update(g);
-        for (int i = Components.size() - 1; i >= 0; i--) {
-            Components.get(i).Update(g);
-        }
-        if (Components.size() != 0) {
-            for (int i = 0; i < Components.size(); i++) {
-                if (Components.get(i) != null) {
-                    Components.get(i).Update(g);
-                }
+        for (int i = 0; i < Components.size(); i++) {
+            if (Components.get(i) != null) {
+                Components.get(i).Update(g);
             }
         }
 
