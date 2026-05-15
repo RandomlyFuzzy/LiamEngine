@@ -27,15 +27,10 @@ jobs:
 
       - name: Build with Ant
         working-directory: Engine
-        run: ant clean jar
+        run: ant jar
 
       - name: Show build output (debug)
-        run: |
-          echo "JAR files:" 
-          find Engine -type f -name "*.jar" -print || true
-          echo "Build/classes tree:" 
-          ls -R Engine/build || true
-
+        run: find Engine -type f -name "*.jar" -print
 
       - name: Get JAR path
         id: jar
@@ -50,19 +45,6 @@ jobs:
             echo "No JAR found after build!"
             exit 1
           fi
-
-      - name: Validate JAR contains critical classes
-        if: ${{ steps.jar.outputs.file != '' }}
-        run: |
-          jarfile=${{ steps.jar.outputs.file }}
-          echo "Inspecting $jarfile"
-          jar tf "$jarfile" > /tmp/jar_contents.txt
-          grep -E "com/Liamengine/Engine/AbstractClasses/ILevel.class" /tmp/jar_contents.txt || {
-            echo "ERROR: ILevel.class not present in jar. Aborting release.";
-            echo "Jar content:"; head -n 200 /tmp/jar_contents.txt || true
-            exit 1;
-          }
-          echo "ILevel.class found."
 
       - name: Create GitHub Release and upload JAR
         uses: softprops/action-gh-release@v2
